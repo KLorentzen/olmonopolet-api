@@ -1,0 +1,14 @@
+version: '3.7'
+
+services:
+    app:
+        build: .
+        env_file: 
+            - ./.env
+        restart: always
+        volumes:
+            - .:/app
+        ports:
+            - 8000:8000
+        command: python /app/manage.py runserver 0.0.0.0:8000
+#
