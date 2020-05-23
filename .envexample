@@ -1,0 +1,5 @@
+#Django Environment Variables
+SECRET_KEY=
+
+#Vinmonopolet API Keys
+VMP_PRIMARY_KEY=
