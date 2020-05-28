@@ -3,5 +3,5 @@ from .models import Beer
 
 class BeerSerializer(serializers.ModelSerializer):
     class Meta:
-        fields=('name','brewery','style','alc_volume','volume','url','added_date')
+        fields=('beer_ID','name','brewery','style','alc_volume','volume','url','added_date')
         model = Beer

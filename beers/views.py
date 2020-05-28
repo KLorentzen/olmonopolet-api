@@ -7,3 +7,7 @@ from rest_framework import generics
 class BeerList(generics.ListAPIView):
     queryset=Beer.objects.all()
     serializer_class=BeerSerializer
+
+class BeerDetail(generics.RetrieveAPIView):
+    queryset = Beer.objects.all()
+    serializer_class = BeerSerializer
