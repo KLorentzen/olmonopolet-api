@@ -1,0 +1,1 @@
+'''Scrape data from Vinmonopolet.no'''

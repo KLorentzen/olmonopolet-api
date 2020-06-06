@@ -1,0 +1,1 @@
+'''Functions used to retrieve data by use of the API available from Vinmonopolet'''
