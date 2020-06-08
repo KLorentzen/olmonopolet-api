@@ -7,7 +7,7 @@ def get_all_products():
     none
 
     Returns: 
-    list: List of all products currently in stock at Vinmonopolet
+    list: List of all products currently in stock at Vinmonopolet in JSON format
     '''
 
     URL = "https://apis.vinmonopolet.no/products/v0/accumulated-stock"
