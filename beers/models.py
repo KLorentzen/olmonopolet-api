@@ -10,7 +10,7 @@ class Beer(models.Model):
     style = models.CharField(help_text="Beer style",max_length=250, blank=True)
     alc_volume = models.FloatField(help_text="Alcohol volume in %", null=True,blank=True)
     volume = models.FloatField(help_text="Volume in liters",null=True ,blank=True)
-    selection = models.CharField(max_length=250, blank=True)
+    selection = models.CharField(help_text='Product selection and ordering range',max_length=250, blank=True)
     url = models.URLField(max_length=250, blank=True)
 
     
