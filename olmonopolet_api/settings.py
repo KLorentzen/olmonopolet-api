@@ -45,6 +45,7 @@ INSTALLED_APPS = [
     'api.apps.ApiConfig',
     'beers.apps.BeersConfig',
     'stores.apps.StoresConfig',
+    'stock.apps.StockConfig',
 ]
 
 MIDDLEWARE = [
