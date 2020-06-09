@@ -7,3 +7,4 @@ from .serializers import BeerStockSerializer
 class BeerStockList(generics.ListAPIView):
     queryset = BeerStock.objects.all()
     serializer_class = BeerStockSerializer
+    filterset_fields = ['store_id', 'beer_id']

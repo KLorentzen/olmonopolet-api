@@ -40,6 +40,7 @@ INSTALLED_APPS = [
 
     # 3rd Party Apps
     'rest_framework',
+    'django_filters',
 
     # Local Apps
     'api.apps.ApiConfig',
@@ -132,5 +133,9 @@ STATIC_URL = '/static/'
 REST_FRAMEWORK={
     'DEFAULT_PERMISSION_CLASSES': [
         'rest_framework.permissions.AllowAny',
-    ]
+        
+    ],
+    'DEFAULT_FILTER_BACKENDS': [
+        'django_filters.rest_framework.DjangoFilterBackend'
+    ],
 }
