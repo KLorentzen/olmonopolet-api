@@ -10,7 +10,6 @@ def get_stock_all_stores(beer_id):
     Returns:
     list: List with beer stock details in all VMP stores
     '''
-    
     URL = f"https://www.vinmonopolet.no/api/products/{beer_id}/stock"
     PARAMS = {"latitude": 0, "longitude": 0, "pageSize": 1000}
 
