@@ -47,6 +47,7 @@ INSTALLED_APPS = [
     'beers.apps.BeersConfig',
     'stores.apps.StoresConfig',
     'stock.apps.StockConfig',
+    'untappd.apps.UntappdConfig',
 ]
 
 MIDDLEWARE = [
