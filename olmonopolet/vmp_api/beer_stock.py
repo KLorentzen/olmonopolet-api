@@ -14,6 +14,9 @@ def get_stock_all_stores(beer_id):
     PARAMS = {"latitude": 0, "longitude": 0, "pageSize": 1000}
 
     # Add exception handling
-    beer_stock = httpx.get(URL,params=PARAMS).json()
-    
-    return beer_stock["stores"]
+    try:
+        beer_stock = httpx.get(URL,params=PARAMS).json()
+        return beer_stock["stores"]
+    except Exception as err:
+        print(f"Exception cought: {err}")
+        return []

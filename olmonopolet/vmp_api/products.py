@@ -23,12 +23,12 @@ def get_all_products():
     return all_products[-100:]
 
 
-    def get_product_details(product_id):
+def get_product_details(product_id):
     '''Retrieve product details.
-    
+
     Parameters:
     arg1 int: product_id 
-    
+
     Returns: 
     str: JSON with product details
     '''
