@@ -1,10 +1,22 @@
 from django.db import models
 
 # Create your models here.
+class Product(models.Model):
+    '''
+    Utility model holding all product id's fetched from Vinmonopolet.
+    Products include categories other than "øl".
+    '''
+    product_id = models.IntegerField(primary_key=True)
+    main_category = models.CharField(max_length=250)
+
+    added_date = models.DateField(auto_now=False, auto_now_add=True)
+    
+    def __str__(self):
+        return str(self.product_id)
+
 
 class Beer(models.Model):
-    # TODO: Add Product as foreign key?
-    beer_id = models.IntegerField(primary_key=True)
+    beer_id = models.OneToOneField(Product, to_field='product_id', on_delete=models.CASCADE,primary_key=True)
     name = models.CharField(max_length=250)
     brewery = models.CharField(max_length=250, blank=True)
     country = models.CharField(max_length=250, blank=True)
@@ -21,16 +33,4 @@ class Beer(models.Model):
     def __str__(self):
         return self.name
 
-class Product(models.Model):
-    '''
-    Utility model holding all product id's fetched from Vinmonopolet.
-    Products include categories other than "øl".
-    '''
-    product_id = models.IntegerField()
-    main_category = models.CharField(max_length=250)
-
-    added_date = models.DateField(auto_now=False, auto_now_add=True)
-    
-    def __str__(self):
-        return str(self.product_id)
     
