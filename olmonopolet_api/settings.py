@@ -48,6 +48,7 @@ INSTALLED_APPS = [
     'stores.apps.StoresConfig',
     'stock.apps.StockConfig',
     'untappd.apps.UntappdConfig',
+    'sales.apps.SalesConfig',
 ]
 
 MIDDLEWARE = [
