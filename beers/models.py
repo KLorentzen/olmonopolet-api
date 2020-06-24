@@ -25,8 +25,9 @@ class Beer(models.Model):
     price = models.FloatField(help_text="Product prize in NOK", default= 0.00,  blank=True)
     volume = models.FloatField(help_text="Volume in liters",null=True ,blank=True)
     selection = models.CharField(help_text='Product selection and ordering range',max_length=250, blank=True)
-    url = models.URLField(help_text='URL extension to https://vinmonopolet.no',max_length=250, blank=True)
+    url = models.CharField(help_text='URL extension to https://vinmonopolet.no',max_length=250, blank=True)
 
+    # TODO: legg til en attributt som holder "buyable" status. den er False dersom varen ikke kan kjøpes, ref før slipp.
     
     added_date = models.DateField(auto_now=False, auto_now_add=True)
     
