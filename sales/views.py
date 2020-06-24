@@ -7,4 +7,4 @@ from .serializers import DailySaleSerializer
 class DailySaleList(generics.ListAPIView):
     queryset = DailySale.objects.all()
     serializer_class = DailySaleSerializer
-    filterset_fields = ['store_id', 'beer_id']
+    filterset_fields = ['store_id', 'beer_id', 'sales_day']
