@@ -15,12 +15,14 @@ def get_all_products():
     PARAMS = {"maxResults": 100000}
 
     # Retrieve all products currently in stock at VMP
-    all_products = httpx.get(URL,headers=HEADERS,params=PARAMS).json()
-    # TODO: Add try/except for api-call
+    try:
+        all_products = httpx.get(URL,headers=HEADERS,params=PARAMS).json()
+    except Exception as err:
+        all_products = []
 
     # TODO: Return all products
-    # For testing purposes only the last 100 products will be returned
-    return all_products[-100:]
+    # For testing purposes only the last 500 products will be returned
+    return all_products[-500:]
 
 
 def get_product_details(product_id):
@@ -30,12 +32,14 @@ def get_product_details(product_id):
     arg1 int: product_id 
 
     Returns: 
-    str: JSON with product details
+    dict: JSON with product details if success, otherwise returns False (bool).
     '''
     product_url = "https://www.vinmonopolet.no/api/products/" + product_id + "/"
 
     # Get details from VMP about product
-    # TODO: add try/except
-    product_details = httpx.get(product_url).json()
+    try:
+        product_details = httpx.get(product_url).json()
+    except Exception as err:
+        product_details = False
 
     return product_details

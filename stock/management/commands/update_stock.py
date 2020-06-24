@@ -2,15 +2,17 @@ from django.core.management.base import BaseCommand
 from beers.models import Beer
 from stock.models import BeerStock
 from stores.models import Store
+from sales.models import DailySale
 from django.db.utils import IntegrityError
 from olmonopolet.vmp_api import beer_stock  
+from olmonopolet.stock import sales 
+from django.core.exceptions import ObjectDoesNotExist
+from datetime import date
 
 class Command(BaseCommand):
-    help = 'Update beer stock from Vinmonopolet'
+    help = 'Update beer stock and daily sales from Vinmonopolet'
 
     def handle(self, *args, **options):
-        # Used for logging
-        # new_products = 0
         
         # Retrieve all beers in database
         beers = Beer.objects.all()
@@ -35,39 +37,70 @@ class Command(BaseCommand):
             # Set stock to 0 in all stores out of stock, but which has previously had it in stock
             for empty_store in empty_stores:
 
-                # Calculate beer sale as last stock since new stock is 0
-                sales = BeerStock.objects.get(beer_id=beer.beer_id,store_id=empty_store)
-                self.stdout.write(f"Updated stock(=0) in store: {empty_store}. Sales {sales.product_stock}")
+                # TODO: try/except dersom det ikke returneres noe (ObjectDoesNotExist)
+                vmp_store = Store.objects.get(store_id=empty_store)
+                current_stock = BeerStock.objects.get(beer_id=beer,store_id=vmp_store)
 
                 obj, created = BeerStock.objects.update_or_create(
                     beer_id = beer,
-                    store_id = empty_store,
+                    store_id = vmp_store,
                     defaults={
                     'product_stock' : 0
                     }
                 )
-
+                
+                daily_sales = sales.get_daily_beer_sale(
+                    beer,
+                    vmp_store, 
+                    current_stock.product_stock, 
+                    obj.product_stock
+                )
+                
+                sale_obj, created = DailySale.objects.update_or_create(
+                    beer_id = beer,
+                    store_id = vmp_store,
+                    sales_day = date.today(),
+                    defaults={
+                    'beers_sold': daily_sales
+                    }
+                )
+                self.stdout.write(f"Updated {obj.beer_id.name}, stock: {obj.product_stock}, sales: {sale_obj.beers_sold}")
+                
             # Filter stock to only write stock for Molde
             for store_stock in filter(lambda x: x["name"] == str(244), stock_all_stores):
-                # TODO: remove logging
-                self.stdout.write(f"Updated stock(>0) in store: {store_stock['name']}")
-                
+                vmp_store = Store.objects.get(store_id=int(store_stock["name"]))
 
-                # current_store_stock = filter(lambda x: x["store_id"] == 244 ,current_stock)
-                # self.stdout.write(f"Stock change: {current_store_stock['product_stock']}")
+                try:
+                    existing_stock = BeerStock.objects.get(beer_id=beer, store_id=vmp_store)
+                    # self.stdout.write(f"current stock {current_stock.product_stock} on {datetime.date.today()}")
+                    current_stock = existing_stock.product_stock
+                except ObjectDoesNotExist as err:
+                    # Implies that beer has never been in stock before and should be 0
+                    current_stock = 0
 
-                # TODO: Add sales information
-
-                    # update_or_create skal brukes
                 obj, created = BeerStock.objects.update_or_create(
                     beer_id = beer,
-                    store_id = Store.objects.get(store_id=int(store_stock["name"])),
+                    store_id = vmp_store,
                     defaults={
                     'product_stock' : store_stock["stockInfo"]["stockLevel"]
                     }
                 )
-
-        # Log how many new products were added to the database
-        # self.stdout.write(f"Completed and inserted {new_products} new products.")
+                
+                daily_sales = sales.get_daily_beer_sale(
+                    beer,
+                    vmp_store, 
+                    current_stock, 
+                    obj.product_stock
+                )
+                
+                sale_obj, created = DailySale.objects.update_or_create(
+                    beer_id = beer,
+                    store_id = vmp_store,
+                    sales_day = date.today(),
+                    defaults={
+                    'beers_sold': daily_sales
+                    }
+                )
+                self.stdout.write(f"Updated {obj.beer_id.name}, stock: {obj.product_stock}, sales: {sale_obj.beers_sold}")
 
         return

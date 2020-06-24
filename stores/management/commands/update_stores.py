@@ -12,13 +12,13 @@ class Command(BaseCommand):
         
         # Get list of all stores in database
         db_stores = list(Store.objects.values_list('store_id', flat=True))
-        self.stdout.write(str(db_stores))
+
         # Retrieve all Vinmonopolet stores
         all_stores = vmp_api_stores.get_all_stores()
 
         for store in all_stores:
             
-            # Only add the store if it not exist in the database
+            # Only add the store if it does not exist in the database
             if int(store["storeId"]) in db_stores:
                 pass
             else:
@@ -26,7 +26,7 @@ class Command(BaseCommand):
                 try:
                     # TODO: Add all stores when testing is completed
                     # Only use Molde (storeId=244) for testing
-                    if int(store["storeId"]) in (244):
+                    if int(store["storeId"]) in (244,245):
                         new_obj = Store.objects.create(
                             store_id = store["storeId"],
                             name = store["storeName"],

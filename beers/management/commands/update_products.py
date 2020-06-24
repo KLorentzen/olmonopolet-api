@@ -37,6 +37,9 @@ class Command(BaseCommand):
                 # Get product details from Vinmonopolet
                 product_details = vmp_api_products.get_product_details(product["productId"])
 
+                if not product_details:
+                    self.stdout.write("Could not connect with Vinmonopolet")
+                    break
 
                 # Add product to Product table
                 new_prod_obj = Product.objects.create(
@@ -64,13 +67,13 @@ class Command(BaseCommand):
                             url = product_details["url"])
 
                         # Map Beer from VMP with Untappd
-                        # untappd_mapping = mapping.find_untappd_mapping(beer_obj.name)
-                        # mapping_obj = UntappdMapping.objects.create(
-                        #     beer_id = beer_obj,
-                        #     untappd_id = untappd_mapping['id'],
-                        #     name = untappd_mapping['name'],
-                        #     url = untappd_mapping['url']
-                        # )
+                        untappd_mapping = mapping.find_untappd_mapping(beer_obj.name)
+                        mapping_obj = UntappdMapping.objects.create(
+                            beer_id = beer_obj,
+                            untappd_id = untappd_mapping['id'],
+                            name = untappd_mapping['name'],
+                            url = untappd_mapping['url']
+                        )
 
                     except Exception as err:
                         self.stdout.write(f"Could not insert beer: {product['productId']}")
