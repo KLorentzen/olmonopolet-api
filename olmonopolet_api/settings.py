@@ -25,7 +25,8 @@ SECRET_KEY = os.environ.get('DJANGO_SECRET_KEY')
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+# TODO: Alter ALLOWED_HOST as current setting is DEV
+ALLOWED_HOSTS = ['0.0.0.0','localhost', 'ngrok.io']
 
 
 # Application definition
@@ -36,6 +37,7 @@ INSTALLED_APPS = [
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
+    'whitenoise.runserver_nostatic',
     'django.contrib.staticfiles',
 
     # 3rd Party Apps
@@ -53,6 +55,7 @@ INSTALLED_APPS = [
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -85,6 +88,7 @@ WSGI_APPLICATION = 'olmonopolet_api.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/3.0/ref/settings/#databases
 
+# TODO: Update database to POSTGRESQL
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
@@ -130,6 +134,12 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/3.0/howto/static-files/
 
 STATIC_URL = '/static/'
+STATICFILES_DIRS = [os.path.join(BASE_DIR, 'static'),]
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
+STATICFILES_FINDERS = [
+    "django.contrib.staticfiles.finders.FileSystemFinder",
+    "django.contrib.staticfiles.finders.AppDirectoriesFinder",
+]
 
 # Django REST Framework Settings
 REST_FRAMEWORK={
