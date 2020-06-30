@@ -8,5 +8,5 @@ class RatingSerializer(serializers.ModelSerializer):
 
 class UntappdMappingSerializer(serializers.ModelSerializer):
     class Meta:
-        fields = ('beer_id', 'untappd_id', 'name', 'url')
+        fields = ('beer_id', 'untappd_id', 'name', 'url', 'img_url')
         model = UntappdMapping
