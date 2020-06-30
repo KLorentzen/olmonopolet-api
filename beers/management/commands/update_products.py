@@ -64,7 +64,7 @@ class Command(BaseCommand):
                             alc_volume = product_web_details['alcohol'],
                             volume = product_details["volume"]["value"],
                             selection = product_details["product_selection"],
-                            url = product_details["url"])
+                            url = 'https://www.vinmonopolet.no' + product_details["url"])
 
                         # Map Beer from VMP with Untappd
                         untappd_mapping = mapping.find_untappd_mapping(beer_obj.name)
@@ -72,7 +72,8 @@ class Command(BaseCommand):
                             beer_id = beer_obj,
                             untappd_id = untappd_mapping['id'],
                             name = untappd_mapping['name'],
-                            url = untappd_mapping['url']
+                            url = untappd_mapping['url'],
+                            img_url = untappd_mapping['img_url']
                         )
 
                     except Exception as err:
