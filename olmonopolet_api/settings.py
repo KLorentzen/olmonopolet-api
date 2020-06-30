@@ -43,6 +43,7 @@ INSTALLED_APPS = [
     # 3rd Party Apps
     'rest_framework',
     'django_filters',
+    'corsheaders',
 
     # Local Apps
     'api.apps.ApiConfig',
@@ -57,6 +58,7 @@ MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'whitenoise.middleware.WhiteNoiseMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
+    'corsheaders.middleware.CorsMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
@@ -160,3 +162,10 @@ EMAIL_HOST_USER = os.environ.get('SG_EMAIL_HOST_USER')
 EMAIL_HOST_PASSWORD = os.environ.get('SENDGRID_API_KEY')
 EMAIL_PORT = os.environ.get('SG_EMAIL_PORT')
 EMAIL_USE_TLS = True if os.environ.get('SG_EMAIL_USE_TLS').lower() == 'true' else False
+
+
+# Cross Origin Resource Sharing (CORS)
+CORS_ORIGIN_WHITELIST = (
+    'http://localhost:8000',
+    'http://localhost:8080'
+)
