@@ -14,6 +14,11 @@ class Command(BaseCommand):
 
     def handle(self, *args, **options):
         
+        # Check if Vinmonopolet is available
+        if beer_stock.isVMPonline:
+            self.stdout.write(f"Vinmonopolet is not available...")
+            return
+
         # Retrieve all beers in database
         beers = Beer.objects.all()
 
@@ -30,9 +35,6 @@ class Command(BaseCommand):
 
             # empty_stores = [beer for beer in current_stock if beer not in stores_with_stock]
             empty_stores = filter(lambda x: x not in stores_with_stock,old_stock)
-
-            # TODO: Legg inn håndtering av tilfeller der man ikke får data fra Vinmonopolet. Det må passes på at stock ikke skrives til 0 bare fordi vi ikke får kontakt og data. ref. spesialslipp og queue-it
-
             
             # Set stock to 0 in all stores out of stock, but which has previously had it in stock
             for empty_store in empty_stores:

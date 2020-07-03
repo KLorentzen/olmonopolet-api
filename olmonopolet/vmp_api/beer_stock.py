@@ -15,8 +15,38 @@ def get_stock_all_stores(beer_id):
 
     # Add exception handling
     try:
-        beer_stock = httpx.get(URL,params=PARAMS).json()
-        return beer_stock["stores"]
+        # Redirects are not allowed since it implies a release (Queue-it) at Vinmonopolet
+        beer_stock = httpx.get(URL,params=PARAMS, allow_redirects=False)
+
+        if beer_stock.status_code != 200:
+            print(f"Could not fetch stock at Vinmonopolet, got the following status code: {beer_stock.status_code}.")
+            return []
+        else: 
+            # beer_stock.json()
+            return beer_stock.json()["stores"]
     except Exception as err:
         print(f"Exception cought: {err}")
         return []
+
+def isVMPonline():
+    '''
+    Check if vinmonopolet is available for queries.  
+    On days with product releases at Vinmonopolet you will be redirected to a queue, hence it will not be possible to fetch data.  
+    
+    Arguments:  
+    none  
+      
+    Returns:  
+    bool: Vinmonopolet availability
+    '''
+
+    URL = "https://www.vinmonopolet.no/"
+
+    try:
+        response = httpx.get(URL, allow_redirects=False)
+        if response.status_code != 200:
+            return False
+        else:
+            return True
+    except Exception as err:
+        return False
