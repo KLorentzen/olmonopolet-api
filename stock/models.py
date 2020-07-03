@@ -11,6 +11,8 @@ class BeerStock(models.Model):
     store_id = models.ForeignKey(Store, verbose_name="Stores",on_delete=models.CASCADE)
     product_stock = models.IntegerField()
     
+    restock_date = models.DateField(help_text='Date when product was last re-stocked',auto_now=False, auto_now_add=False, null=True)
+    out_of_stock_date = models.DateField(help_text='Date when product was sold out', auto_now=False, auto_now_add=False, null=True)
     last_updated = models.DateTimeField(auto_now=True)
     created = models.DateField( auto_now_add=True)
 
