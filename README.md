@@ -45,13 +45,17 @@ Query Parameters:
 ----------
 
 **Untappd**  
-Beer Ratings from Untappd  
+List of Beer Details from Untappd  
 ```http
 [GET]
-api/v1/untappd/rating
+api/v1/untappd/
 ``` 
-Query Parameters:  
-*[beer_id]:int*  -  Provide beer_id to get rating for given beer.  
+
+Beer Details for Specified <beer_id>.  
+```http
+[GET]
+api/v1/untappd/<beer_id>
+``` 
 
 
 Verified beer mappings between Vinmonopolet and Untappd.

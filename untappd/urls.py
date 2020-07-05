@@ -1,8 +1,8 @@
 from django.urls import path, include
-from .views import RatingList, RatingDetail, MappingList
+from .views import UntappdList, UntappdDetail, MappingList
 
 urlpatterns = [
-    path('rating',RatingList.as_view()),
-    path('rating/<int:beer_id>',RatingDetail.as_view()),
+    path('',UntappdList.as_view()),
+    path('<int:beer_id>',UntappdDetail.as_view()),
     path('mapping',MappingList.as_view()),
 ]

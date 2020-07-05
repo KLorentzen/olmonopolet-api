@@ -1,18 +1,17 @@
 from django.shortcuts import render
 from rest_framework import generics
-from .serializers import RatingSerializer, UntappdMappingSerializer
-from .models import Rating, UntappdMapping
+from .serializers import UntappdSerializer, UntappdMappingSerializer
+from .models import Untappd, UntappdMapping
 
 # Create your views here.
 
-class RatingList(generics.ListAPIView):
-    queryset = Rating.objects.all()
-    serializer_class = RatingSerializer
-    filterset_fields = ['beer_id']
+class UntappdList(generics.ListAPIView):
+    queryset = Untappd.objects.all()
+    serializer_class = UntappdSerializer
 
-class RatingDetail(generics.RetrieveAPIView):
-    queryset = Rating.objects.all()
-    serializer_class = RatingSerializer
+class UntappdDetail(generics.RetrieveAPIView):
+    queryset = Untappd.objects.all()
+    serializer_class = UntappdSerializer
     lookup_field = 'beer_id'
 
 class MappingList(generics.ListAPIView):
