@@ -32,26 +32,22 @@ def _get_untappd_mapping_data(search_item):
     Beautifulsoup object  
     
     Returns:
-    dict: beer id, name, URL and Image URL 
+    dict: beer id, name and URL
     '''
     # Untappd beer object to return
     mapping_data = {
         'id':'',
         'url': '',
         'name': '',
-        'img_url': ''
     }
 
     _id = search_item.find("a",class_="label")["href"].replace('/beer/','')
     _url = search_item.find("div",class_="beer-details").find('p',class_ = 'name').find('a')['href'] 
     _name = search_item.find("div",class_="beer-item").find('p',class_ = 'name').find('a').string 
-    _img_url = search_item.find("div",class_="beer-item").find('a',class_ = 'label').find('img')['src'] 
-    # TODO: Handle img_url which is placeholder for missing img at Untappd
     
     mapping_data["id"]= int(_id)
     mapping_data["url"]='https://untappd.com' + _url
     mapping_data["name"]=_name
-    mapping_data["img_url"]=_img_url
 
     return mapping_data
 
@@ -114,7 +110,6 @@ def find_untappd_mapping(beer_name):
         'name':'',
         'id': 0,
         'url':'',
-        'img_url':''
     }
     
     best_search = {
