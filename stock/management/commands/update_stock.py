@@ -15,7 +15,7 @@ class Command(BaseCommand):
     def handle(self, *args, **options):
         
         # Check if Vinmonopolet is available
-        if beer_stock.isVMPonline:
+        if not beer_stock.isVMPonline:
             self.stdout.write(f"Vinmonopolet is not available...")
             return
 
@@ -79,7 +79,7 @@ class Command(BaseCommand):
                 except ObjectDoesNotExist as err:
                     # Implies that beer has never been in stock before and should be 0
                     current_stock = 0
-
+                # TODO: Legg til logikk for å oppdatere restock_date og out_of_stock_date
                 obj, created = BeerStock.objects.update_or_create(
                     beer_id = beer,
                     store_id = vmp_store,

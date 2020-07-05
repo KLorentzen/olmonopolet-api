@@ -73,7 +73,6 @@ class Command(BaseCommand):
                             untappd_id = untappd_mapping['id'],
                             name = untappd_mapping['name'],
                             url = untappd_mapping['url'],
-                            img_url = untappd_mapping['img_url']
                         )
 
                     except Exception as err:

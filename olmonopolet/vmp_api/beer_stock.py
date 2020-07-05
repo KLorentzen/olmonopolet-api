@@ -15,8 +15,7 @@ def get_stock_all_stores(beer_id):
 
     # Add exception handling
     try:
-        # Redirects are not allowed since it implies a release (Queue-it) at Vinmonopolet
-        beer_stock = httpx.get(URL,params=PARAMS, allow_redirects=False)
+        beer_stock = httpx.get(URL,params=PARAMS, allow_redirects=True)
 
         if beer_stock.status_code != 200:
             print(f"Could not fetch stock at Vinmonopolet, got the following status code: {beer_stock.status_code}.")
