@@ -63,7 +63,7 @@ class Command(BaseCommand):
                             price = product_details["price"]["value"],
                             alc_volume = product_web_details['alcohol'],
                             volume = product_details["volume"]["value"],
-                            selection = product_details["product_selection"],
+                            selection = product_details["product_selection"] if "product_selection" in product_details else None,
                             url = 'https://www.vinmonopolet.no' + product_details["url"])
 
                         # Map Beer from VMP with Untappd
