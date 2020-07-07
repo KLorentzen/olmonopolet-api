@@ -47,7 +47,8 @@ class Command(BaseCommand):
                     beer_id = beer,
                     store_id = vmp_store,
                     defaults={
-                    'product_stock' : 0
+                    'product_stock' : 0,
+                    'out_of_stock_date': date.today() if current_stock.product_stock > 0 else current_stock.out_of_stock_date
                     }
                 )
                 
@@ -79,12 +80,14 @@ class Command(BaseCommand):
                 except ObjectDoesNotExist as err:
                     # Implies that beer has never been in stock before and should be 0
                     current_stock = 0
-                # TODO: Legg til logikk for å oppdatere restock_date og out_of_stock_date
+                    
                 obj, created = BeerStock.objects.update_or_create(
                     beer_id = beer,
                     store_id = vmp_store,
                     defaults={
-                    'product_stock' : store_stock["stockInfo"]["stockLevel"]
+                    'product_stock' : store_stock["stockInfo"]["stockLevel"],
+                    'restock_date' : date.today() if store_stock["stockInfo"]["stockLevel"] > current_stock else existing_stock.restock_date,
+                    'out_of_stock_date' : None
                     }
                 )
                 
