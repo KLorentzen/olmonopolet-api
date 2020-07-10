@@ -5,7 +5,7 @@ from stores.models import Store
 from sales.models import DailySale
 from django.db.utils import IntegrityError
 from olmonopolet.vmp_api import beer_stock  
-from olmonopolet.stock import sales 
+from olmonopolet.stock import restock, sales 
 from django.core.exceptions import ObjectDoesNotExist
 from datetime import date
 
@@ -86,7 +86,8 @@ class Command(BaseCommand):
                     store_id = vmp_store,
                     defaults={
                     'product_stock' : store_stock["stockInfo"]["stockLevel"],
-                    'restock_date' : date.today() if store_stock["stockInfo"]["stockLevel"] > current_stock else existing_stock.restock_date,
+                    'restock_qty' : restock.get_restock_qty(current_stock, store_stock["stockInfo"]["stockLevel"]) if restock.is_restocked(current_stock, store_stock["stockInfo"]["stockLevel"]) else existing_stock.restock_qty,
+                    'restock_date' : date.today() if restock.is_restocked(current_stock, store_stock["stockInfo"]["stockLevel"]) else existing_stock.restock_date,
                     'out_of_stock_date' : None
                     }
                 )
