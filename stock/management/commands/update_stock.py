@@ -6,6 +6,7 @@ from sales.models import DailySale
 from django.db.utils import IntegrityError
 from olmonopolet.vmp_api import beer_stock  
 from olmonopolet.stock import restock, sales 
+from olmonopolet.notifications import restock as notification
 from django.core.exceptions import ObjectDoesNotExist
 from datetime import date
 
@@ -18,6 +19,9 @@ class Command(BaseCommand):
         if not beer_stock.isVMPonline:
             self.stdout.write(f"Vinmonopolet is not available...")
             return
+
+        # Dictionary with key="store_id" and values are list of beers that are restocked and should be notified per email
+        notify_restock = {}
 
         # Retrieve all beers in database
         beers = Beer.objects.all()
@@ -107,6 +111,17 @@ class Command(BaseCommand):
                     'beers_sold': daily_sales
                     }
                 )
-                self.stdout.write(f"Updated {obj.beer_id.name}, stock: {obj.product_stock}, sales: {sale_obj.beers_sold}")
 
+                # All beers that are restocked, and have been out of stock (current stock=0), for a store will be added to notification "restock"
+                if restock.is_restocked(current_stock, store_stock["stockInfo"]["stockLevel"]) and current_stock == 0:
+                    notify_restock.setdefault(vmp_store,[]).append(beer)
+
+                self.stdout.write(f"Updated {obj.beer_id.name}, stock: {obj.product_stock}, sales: {sale_obj.beers_sold}")
+        
+        
+        # Send email notification for Beers that are restocked
+        if len(notify_restock) > 0:
+            notification.send_restock_email(notify_restock)
+
+        self.stdout.write(f"notification: {notify_restock}")
         return
