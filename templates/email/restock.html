@@ -1,0 +1,9 @@
+<h2>Hei <b><i>{{ username }}</i></b>!</h2>
+<div>
+    <p>Vinmonopolet har fylt på i hyllene hos <i>{{ store.name }}</i>! </p>
+    {% for beer in beers %}
+    <li>
+        {{ beer.name }} ( NOK {{ beer.price }} ) - {{ beer.alc_volume }}%
+    </li>
+    {% endfor %}
+</div>
