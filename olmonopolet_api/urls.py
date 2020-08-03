@@ -15,10 +15,12 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path, include
+from olmonopolet_api import views
 
 urlpatterns = [
     path('kjelleren/', admin.site.urls),
     path('api/v1/',include('api.urls')),
     path('api-auth/',include('rest_framework.urls')),
+    path('', views.frontend),
     #TODO: Add 404 for fallthrough paths
 ]
