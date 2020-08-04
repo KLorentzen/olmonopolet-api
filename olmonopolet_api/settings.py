@@ -15,6 +15,7 @@ import os
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
+ENVIRONMENT = os.environ.get('ENVIRONMENT', default='production')
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/3.0/howto/deployment/checklist/
@@ -23,10 +24,9 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SECRET_KEY = os.environ.get('DJANGO_SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False if ENVIRONMENT == 'production' else True
 
-# TODO: Alter ALLOWED_HOST as current setting is DEV
-ALLOWED_HOSTS = ['0.0.0.0','localhost', 'ngrok.io']
+ALLOWED_HOSTS = ['.herokuapp.com','localhost', '127.0.0.1', '0.0.0.0']
 
 
 # Application definition
@@ -171,3 +171,30 @@ CORS_ORIGIN_WHITELIST = (
     'http://localhost:8000',
     'http://localhost:8080'
 )
+
+
+
+# Production settings
+if ENVIRONMENT == 'production':
+    # Cross Site Scripting (XSS)
+    SECURE_BROWSER_XSS_FILTER = True
+
+    # Clickjacking
+    X_FRAME_OPTIONS = 'DENY'
+
+    # HTTPS/SSL
+    SECURE_SSL_REDIRECT = True
+    SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO','https')
+
+    # HTTP Strict Transport Security
+    SECURE_HSTS_SECONDS = 3600
+    SECURE_HSTS_INCLUDE_SUBDOMAINS = True
+    SECURE_HSTS_PRELOAD = True
+    SECURE_CONTENT_TYPE_NOSNIFF = True
+
+    # Secure Cookies
+    SESSION_COOKIE_SECURE = True
+    CSRF_COOKIE_SECURE = True
+
+    # Referrer Policy
+    SECURE_REFERRER_POLICY = 'same-origin'
