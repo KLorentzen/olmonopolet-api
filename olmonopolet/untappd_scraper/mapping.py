@@ -90,14 +90,16 @@ def clean_beer_name(beer_name):
     return beer_name
 
 
-def find_untappd_mapping(beer_name):
+def find_untappd_mapping(beer_name, current_search_count, search_limit):
     '''
-    Obtain mapping between beer from Vinmonopolet and Untappd.  
+    Obtain mapping between beer from Vinmonopolet and Untappd. Number of searches are limited according to set parameters.  
     Parameters:  
     string: Vinmonopolet beer name  
+    int: Number of searches performed at the time when the method is called  
+    int: The maximum number of searches allowed  
 
     Returns:  
-    dict: beer id, name and URL for beer at Untappd.com. Returns dictionary with id=0 and empty name and URL if not found.
+    dict: beer id, name, URL and mapping status for beer at Untappd.com. Returns dictionary with id=0 and empty name and URL if not found.
     
     '''
 
@@ -110,6 +112,8 @@ def find_untappd_mapping(beer_name):
         'name':'',
         'id': 0,
         'url':'',
+        'match': False,
+        'searches': current_search_count
     }
     
     best_search = {
@@ -118,7 +122,6 @@ def find_untappd_mapping(beer_name):
     }
 
     beer_name = clean_beer_name(beer_name)
-    print(f"Mapping beer: {' '.join(beer_name)}")
 
     word_count = len(beer_name)
 
@@ -137,6 +140,14 @@ def find_untappd_mapping(beer_name):
             # Search param for untappd
             PARAMS = {"q": query_words }
 
+            # Check number of searches - exit if search count > limit
+            current_search_count += 1
+            mapping_details['searches'] = current_search_count
+            if current_search_count > search_limit:
+                return mapping_details
+
+            print(f"Searching for: {query_words}, count ({current_search_count}/{search_limit})")
+
             # Perform query on Untappd using Word combinations from name on VMP
             response = httpx.get(URL,params=PARAMS)
             untappd_html = BeautifulSoup(response,'html.parser')
@@ -145,6 +156,8 @@ def find_untappd_mapping(beer_name):
             if _get_search_result_count(untappd_html) == 1:
                 
                 mapping_details = _get_untappd_mapping_data(untappd_html)
+                mapping_details['searches'] = current_search_count
+                mapping_details['match'] = True
                 mapping_success = True
                 break
             else:
@@ -153,9 +166,8 @@ def find_untappd_mapping(beer_name):
                     best_search['html'] = untappd_html
 
             # TODO: add more logic to find beer if it is not possible to find a single search result
-            # Reduce request intensity towrads Untappd.com
-            time.sleep(3)
-
+            # Reduce request intensity towards Untappd.com
+            time.sleep(1)
 
         if mapping_success:
             # Break if result is found

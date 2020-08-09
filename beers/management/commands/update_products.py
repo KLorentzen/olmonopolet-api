@@ -5,6 +5,7 @@ from django.db.utils import IntegrityError
 from olmonopolet.vmp_api import products as vmp_api_products 
 from olmonopolet.vmp_scraper import product_details as vmp_details
 from olmonopolet.untappd_scraper import mapping 
+from datetime import datetime
 
 class Command(BaseCommand):
     help = '''
@@ -19,7 +20,10 @@ class Command(BaseCommand):
     '''
 
     def handle(self, *args, **options):
-        # Used for logging
+        # Log when the job is executed
+        self.stdout.write(f"Updating Vinmonopolet products @ {datetime.now()}")
+
+        # TODO: Add functionality to log to file
         new_products = 0
         
         # Get list of all products in database
@@ -65,15 +69,6 @@ class Command(BaseCommand):
                             volume = product_details["volume"]["value"],
                             selection = product_details["product_selection"] if "product_selection" in product_details else None,
                             url = 'https://www.vinmonopolet.no' + product_details["url"])
-
-                        # Map Beer from VMP with Untappd
-                        untappd_mapping = mapping.find_untappd_mapping(beer_obj.name)
-                        mapping_obj = UntappdMapping.objects.create(
-                            beer_id = beer_obj,
-                            untappd_id = untappd_mapping['id'],
-                            name = untappd_mapping['name'],
-                            url = untappd_mapping['url'],
-                        )
 
                     except Exception as err:
                         self.stdout.write(f"Could not insert beer: {product['productId']}")

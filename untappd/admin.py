@@ -14,6 +14,7 @@ class UntappdAdmin(admin.ModelAdmin):
 class UntappdMappingAdmin(admin.ModelAdmin):
     list_display = ('beer_id',
                     'untappd_id',
+                    'auto_match',
                     'verified',
                     'last_updated')    
 

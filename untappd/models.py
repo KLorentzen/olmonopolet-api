@@ -24,6 +24,7 @@ class Untappd(models.Model):
     class Meta:
         verbose_name = 'Untappd'
         verbose_name_plural = 'Untappd'
+        ordering = ['-rating']
 
     def __str__(self):
         # Return the name of the beer_id based on relationship
@@ -37,8 +38,8 @@ class UntappdMapping(models.Model):
     untappd_id = models.IntegerField(help_text='Beer ID on Untappd')
     name = models.CharField(help_text='Name on Untappd.com', max_length=250)
     url = models.URLField(help_text='Full URL to beer on Untappd.com',max_length=250, blank=True)
-
-    verified = models.BooleanField(help_text='Is mapping between Vinmonopolet and Untappd verified by admin?',default=False)
+    auto_match = models.BooleanField(help_text='Was mapping obtained automatically?', default=False)
+    verified = models.BooleanField(help_text='Is mapping between Vinmonopolet and Untappd verified by admin?', default=False)
 
     last_updated = models.DateTimeField(auto_now=True)
     created = models.DateField(auto_now_add=True)
