@@ -25,8 +25,9 @@ class Command(BaseCommand):
                 
                 try:
                     # TODO: Add all stores when testing is completed
-                    # Only use Molde (storeId=244) for testing
-                    if int(store["storeId"]) in (244,245):
+                    # Use Molde (storeId=244) for testing
+                    # Use Egersund (storeID=209) for testing
+                    if int(store["storeId"]) in (209,244,245):
                         new_obj = Store.objects.create(
                             store_id = store["storeId"],
                             name = store["storeName"],

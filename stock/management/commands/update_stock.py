@@ -8,7 +8,7 @@ from olmonopolet.vmp_api import beer_stock
 from olmonopolet.stock import restock, sales 
 from olmonopolet.notifications import restock as notification
 from django.core.exceptions import ObjectDoesNotExist
-from datetime import date
+from datetime import date, datetime
 
 class Command(BaseCommand):
     help = 'Update beer stock and daily sales from Vinmonopolet'
@@ -19,6 +19,10 @@ class Command(BaseCommand):
         if not beer_stock.isVMPonline:
             self.stdout.write(f"Vinmonopolet is not available...")
             return
+
+        # Log when the job is executed
+        start_time = datetime.now()
+        self.stdout.write(f"Updating product stock @ {datetime.now()}")
 
         # Dictionary with key="store_id" and values are list of beers that are restocked and should be notified per email
         notify_restock = {}
@@ -71,10 +75,10 @@ class Command(BaseCommand):
                     'beers_sold': daily_sales
                     }
                 )
-                self.stdout.write(f"Updated {obj.beer_id.name}, stock: {obj.product_stock}, sales: {sale_obj.beers_sold}")
+                self.stdout.write(f"Updated {obj.beer_id.name}, stock: {obj.product_stock}, sales: {sale_obj.beers_sold}, store: {vmp_store}")
                 
             # Filter stock to only write stock for Molde
-            for store_stock in filter(lambda x: x["name"] == str(244), stock_all_stores):
+            for store_stock in filter(lambda x: x["name"] in [str(244),str(209)], stock_all_stores):
                 vmp_store = Store.objects.get(store_id=int(store_stock["name"]))
 
                 try:
@@ -116,12 +120,15 @@ class Command(BaseCommand):
                 if restock.is_restocked(current_stock, store_stock["stockInfo"]["stockLevel"]) and current_stock == 0:
                     notify_restock.setdefault(vmp_store,[]).append(beer)
 
-                self.stdout.write(f"Updated {obj.beer_id.name}, stock: {obj.product_stock}, sales: {sale_obj.beers_sold}")
+                self.stdout.write(f"Updated {obj.beer_id.name}, stock: {obj.product_stock}, sales: {sale_obj.beers_sold}, store: {vmp_store}")
         
         
         # Send email notification for Beers that are restocked
         if len(notify_restock) > 0:
             notification.send_restock_email(notify_restock)
+
+        end_time = datetime.now()
+        self.stdout.write(f"Product stock update took {end_time - start_time} seconds")
 
         self.stdout.write(f"notification: {notify_restock}")
         return
