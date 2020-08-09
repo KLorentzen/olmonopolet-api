@@ -30,6 +30,9 @@ class Beer(models.Model):
     # TODO: legg til en attributt som holder "buyable" status. den er False dersom varen ikke kan kjøpes, ref før slipp.
     
     added_date = models.DateField(auto_now=False, auto_now_add=True)
+
+    class Meta:
+        ordering = ["-added_date"]
     
     def __str__(self):
         return self.name
