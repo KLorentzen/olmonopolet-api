@@ -1,9 +1,32 @@
 <h2>Hei <b><i>{{ username }}</i></b>!</h2>
 <div>
-    <p>Vinmonopolet har fylt på i hyllene hos <i>{{ store.name }}</i>! </p>
+    <p>Vinmonopolet <i>{{ store.name }}</i> har fylt på i hyllene! </p>
     {% for beer in beers %}
-    <li>
-        {{ beer.name }} ( NOK {{ beer.price }} ) - {{ beer.alc_volume }}%
-    </li>
+    <ul>
+        <li>
+
+            <a href="{{beer.url}}" style="text-decoration: none;">
+                <h3 style="margin:0">{{ beer.name }}</h3>
+            </a>
+            <ul>
+                <li>Pris: kr {{ beer.price }}</li>
+                <li>Styrke: {{ beer.alc_volume }}%</li>
+                <li>Størrelse: {{ beer.volume }} liter</li>
+                {% for stock in beer.beerstock.all  %}
+                {% if stock.store_id == store  %}
+                <li>Lagerstatus: {{ stock.product_stock }} stk</li>
+                {% endif %}
+                {% endfor %}
+
+                {% with beer.untappd.all|first as untappd  %}
+                {% if untappd %}
+                <li>Untappd-skår: <a href="{{untappd.url}}" style="text-decoration: none;">{{ untappd.rating|floatformat:3 }}</a></li>
+                
+                {% endif %}
+                
+                {% endwith %}
+            </ul>
+        </li>
+    </ul>
     {% endfor %}
 </div>
