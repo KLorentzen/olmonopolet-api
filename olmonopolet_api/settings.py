@@ -52,6 +52,7 @@ INSTALLED_APPS = [
     'stock.apps.StockConfig',
     'untappd.apps.UntappdConfig',
     'sales.apps.SalesConfig',
+    'notifications.apps.NotificationsConfig'
 ]
 
 MIDDLEWARE = [
