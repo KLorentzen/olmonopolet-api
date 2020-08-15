@@ -7,6 +7,7 @@ class ProductAdmin(admin.ModelAdmin):
 
 class BeerAdmin(admin.ModelAdmin):
     list_display = ('name','brewery','style','alc_volume','selection','added_date')
+    search_fields = ('name',)
     
 
 
