@@ -15,7 +15,6 @@ def send_restock_email(restock):
     null
 
     '''
-
     recipients = EmailNotification.objects.filter(store_updates=True)
     send_status = 0
 
