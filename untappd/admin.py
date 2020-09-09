@@ -10,14 +10,15 @@ class UntappdAdmin(admin.ModelAdmin):
                     'rating',
                     'check_in_unique',
                     'last_updated')   
+    search_fields = ('beer_id__name', )
 
 class UntappdMappingAdmin(admin.ModelAdmin):
     list_display = ('beer_id',
                     'untappd_id',
                     'auto_match',
                     'verified',
-                    'last_updated')    
-
+                    'last_updated')   
+    search_fields = ('beer_id__name', )
 
 admin.site.register(Untappd, UntappdAdmin)
 admin.site.register(UntappdMapping, UntappdMappingAdmin)
