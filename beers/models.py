@@ -6,11 +6,14 @@ class Product(models.Model):
     Utility model holding all product id's fetched from Vinmonopolet.
     Products include categories other than "øl".
     '''
-    product_id = models.IntegerField(primary_key=True)
+    product_id = models.BigIntegerField(primary_key=True)
     main_category = models.CharField(max_length=250)
 
     added_date = models.DateField(auto_now=False, auto_now_add=True)
     
+    class Meta:
+        ordering = ["-added_date"]
+        
     def __str__(self):
         return str(self.product_id)
 
