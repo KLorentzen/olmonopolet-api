@@ -92,14 +92,14 @@ WSGI_APPLICATION = 'olmonopolet_api.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/3.0/ref/settings/#databases
 
-# TODO: Update database to POSTGRESQL
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
-        'OPTIONS': {
-            'timeout': 20,
-        }
+        'ENGINE': 'django.db.backends.postgresql', 
+        'NAME': os.environ.get('POSTGRES_DB'),
+        'USER': os.environ.get('POSTGRES_USER'),
+        'PASSWORD': os.environ.get('POSTGRES_PASSWORD'),
+        'HOST': 'db',
+        'PORT': 5432
     }
 }
 

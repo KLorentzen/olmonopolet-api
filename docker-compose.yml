@@ -3,6 +3,7 @@ version: '3.8'
 services:
     app:
         build: .
+        container_name: app
         env_file: 
             - ./.env-dev
         restart: always
@@ -10,5 +11,17 @@ services:
             - .:/app
         ports:
             - 8000:8000
-        command: gunicorn olmonopolet_api.wsgi -b 0.0.0.0:8000
-#
+        command: gunicorn olmonopolet_api.wsgi -b 0.0.0.0:8000 --timeout=120 --workers=3
+    
+    db:
+        image: postgres:12
+        container_name: olmonopolet_db
+        volumes: 
+            - olmonopolet_data:/var/lib/postgresql/data/
+        env_file: 
+            - ./.env-dev
+        restart: always
+    
+volumes: 
+    olmonopolet_data:
+        name: olmonopolet_db
