@@ -23,4 +23,19 @@ class BeerStock(models.Model):
     def __str__(self):
         # Return the name of the beer_id based on relationship
         return self.beer_id.name
+
+class WatchList(models.Model):
+    '''
+    List of beers to watch out for.
+    Beers in this model will have their stock refreshed more frequently than other beers.
+    '''
+    beer_id = models.ForeignKey(Beer, verbose_name="Beers", related_name='watchlist', on_delete=models.CASCADE)
+    created = models.DateField(auto_now_add=True)
+    
+    class Meta:
+        verbose_name_plural = 'Watch List'
+        ordering = ['beer_id__name']
+    
+    def __str__(self):
+        return self.beer_id.name
     
