@@ -56,16 +56,17 @@ class Command(BaseCommand):
                     try:
                         
                         # Get Additional details about the beer from the Web Page
-                        product_web_details = vmp_details.get_details_web(product_details["url"])
+                        # TODO: Deprecated after URL with full product details were found
+                        # product_web_details = vmp_details.get_details_web(product_details["url"])
                         
                         beer_obj = Beer.objects.create(
                             beer_id = new_prod_obj ,
                             name = product_details["name"],
-                            brewery = product_web_details['brewery'],
+                            brewery = product_details['main_producer']['name'],
                             country = product_details["main_country"]["code"],
-                            style = product_web_details['style'],
+                            style = product_details['main_sub_category']['name'],
                             price = product_details["price"]["value"],
-                            alc_volume = product_web_details['alcohol'],
+                            alc_volume = product_details['alcohol']['value'],
                             volume = product_details["volume"]["value"],
                             selection = product_details["product_selection"] if "product_selection" in product_details else None,
                             url = 'https://www.vinmonopolet.no' + product_details["url"])
