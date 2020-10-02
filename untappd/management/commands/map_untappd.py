@@ -18,7 +18,7 @@ class Command(BaseCommand):
         self.stdout.write(f"Updating Beer mappings @ {datetime.now()}")
 
         SEARCH_COUNT = 0
-        SEARCH_LIMIT = 200
+        SEARCH_LIMIT = 150
         # Retrieve all Beers in DB that does not have an UntappdMapping, using related_name
         unmapped_beers = Beer.objects.filter(mappings = None)
 

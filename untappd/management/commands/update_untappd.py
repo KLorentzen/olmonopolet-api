@@ -41,7 +41,7 @@ class Command(BaseCommand):
                 self.stdout.write(f"Could not create or update Untappd data for '{mapping.beer_id.name}'. Got the following exception: {err} ")
             
             # Reduce load on Untappd and DB
-            time.sleep(0.5)
+            time.sleep(30)
         
         end_time = datetime.now()
         self.stdout.write(f"Untappd update took {end_time - start_time} seconds")

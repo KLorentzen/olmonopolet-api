@@ -3,6 +3,8 @@ from .models import Beer,Product
 
 class ProductAdmin(admin.ModelAdmin):
     list_display = ('product_id','main_category','added_date')
+    search_fields = ('product_id',)
+
 
 
 class BeerAdmin(admin.ModelAdmin):

@@ -13,6 +13,7 @@ class DailySale(models.Model):
 
     class Meta:
         verbose_name_plural = 'Daily Sales'
+        ordering = ['-sales_day', '-beers_sold']
 
     def __str__(self):
         return self.beer_id.name
