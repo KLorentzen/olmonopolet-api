@@ -1,6 +1,6 @@
 from django.core.management.base import BaseCommand
 from beers.models import Beer
-from stock.models import BeerStock
+from stock.models import BeerStock, WatchList
 from stores.models import Store
 from sales.models import DailySale
 from django.db.utils import IntegrityError
@@ -16,6 +16,7 @@ class Command(BaseCommand):
     def handle(self, *args, **options):
         
         # Check if Vinmonopolet is available
+        # TODO: Improve check such that stock is not set to 0 on days with Queue or when stock is set to 0 and set back to the old stock again
         if not beer_stock.isVMPonline:
             self.stdout.write(f"Vinmonopolet is not available...")
             return
@@ -42,7 +43,6 @@ class Command(BaseCommand):
             # Store IDs of stores with stock > 0
             stores_with_stock = [int(i['name']) for i in stock_all_stores]
 
-            # empty_stores = [beer for beer in current_stock if beer not in stores_with_stock]
             empty_stores = filter(lambda x: x not in stores_with_stock,old_stock)
             
             # Set stock to 0 in all stores out of stock, but which has previously had it in stock
@@ -57,6 +57,7 @@ class Command(BaseCommand):
                     store_id = vmp_store,
                     defaults={
                     'product_stock' : 0,
+                    'last_product_stock' : current_stock.product_stock,
                     'out_of_stock_date': date.today() if current_stock.product_stock > 0 else current_stock.out_of_stock_date
                     }
                 )
@@ -65,7 +66,8 @@ class Command(BaseCommand):
                     beer,
                     vmp_store, 
                     current_stock.product_stock, 
-                    obj.product_stock
+                    obj.product_stock,
+                    None
                 )
                 
                 sale_obj, created = DailySale.objects.update_or_create(
@@ -78,7 +80,7 @@ class Command(BaseCommand):
                 )
                 self.stdout.write(f"Updated {obj.beer_id.name}, stock: {obj.product_stock}, sales: {sale_obj.beers_sold}, store: {vmp_store}")
                 
-            # Filter stock to only write stock for Molde
+            # Filter stock to only write stock for Molde/Egersund
             for store_stock in filter(lambda x: x["name"] in [str(244),str(209)], stock_all_stores):
                 vmp_store = Store.objects.get(store_id=int(store_stock["name"]))
 
@@ -86,17 +88,20 @@ class Command(BaseCommand):
                     existing_stock = BeerStock.objects.get(beer_id=beer, store_id=vmp_store)
                     # self.stdout.write(f"current stock {current_stock.product_stock} on {datetime.date.today()}")
                     current_stock = existing_stock.product_stock
+                    last_available_stock = existing_stock.last_product_stock
                 except ObjectDoesNotExist as err:
                     # Implies that beer has never been in stock before and should be 0
                     current_stock = 0
+                    last_available_stock = None
                     
                 obj, created = BeerStock.objects.update_or_create(
                     beer_id = beer,
                     store_id = vmp_store,
                     defaults={
                     'product_stock' : store_stock["stockInfo"]["stockLevel"],
-                    'restock_qty' : restock.get_restock_qty(current_stock, store_stock["stockInfo"]["stockLevel"]) if restock.is_restocked(current_stock, store_stock["stockInfo"]["stockLevel"]) else existing_stock.restock_qty,
-                    'restock_date' : date.today() if restock.is_restocked(current_stock, store_stock["stockInfo"]["stockLevel"]) else existing_stock.restock_date,
+                    'last_product_stock' : None, 
+                    'restock_qty' : restock.get_restock_qty(current_stock, store_stock["stockInfo"]["stockLevel"]) if restock.is_restocked(current_stock, store_stock["stockInfo"]["stockLevel"], last_available_stock) else existing_stock.restock_qty,
+                    'restock_date' : date.today() if restock.is_restocked(current_stock, store_stock["stockInfo"]["stockLevel"], last_available_stock) else existing_stock.restock_date,
                     'out_of_stock_date' : None
                     }
                 )
@@ -105,7 +110,8 @@ class Command(BaseCommand):
                     beer,
                     vmp_store, 
                     current_stock, 
-                    obj.product_stock
+                    obj.product_stock,
+                    last_available_stock
                 )
                 
                 sale_obj, created = DailySale.objects.update_or_create(
@@ -118,7 +124,7 @@ class Command(BaseCommand):
                 )
 
                 # All beers that are restocked, and have been out of stock (current stock=0), for a store will be added to notification "restock"
-                if restock.is_restocked(current_stock, store_stock["stockInfo"]["stockLevel"]) and current_stock == 0:
+                if restock.is_restocked(current_stock, store_stock["stockInfo"]["stockLevel"], last_available_stock) and current_stock == 0:
                     notify_restock.setdefault(vmp_store,[]).append(beer)
 
                 self.stdout.write(f"Updated {obj.beer_id.name}, stock: {obj.product_stock}, sales: {sale_obj.beers_sold}, store: {vmp_store}")

@@ -10,6 +10,7 @@ class BeerStock(models.Model):
     beer_id = models.ForeignKey(Beer, verbose_name="Beers", related_name='beerstock', on_delete=models.CASCADE)
     store_id = models.ForeignKey(Store, verbose_name="Stores",on_delete=models.CASCADE)
     product_stock = models.IntegerField()
+    last_product_stock = models.IntegerField(default=None, null=True, blank=True , help_text='Last available product stock before the stock reached 0')
     
     restock_qty = models.BigIntegerField(help_text='Quantity of new products from last re-stock')
     restock_date = models.DateField(help_text='Date when product was last re-stocked',auto_now=False, auto_now_add=False)
