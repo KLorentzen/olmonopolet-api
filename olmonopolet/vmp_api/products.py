@@ -20,9 +20,8 @@ def get_all_products():
     except Exception as err:
         all_products = []
 
-    # TODO: Return all products
-    # For testing purposes only the last 500 products will be returned
-    return all_products[-500:]
+    # For testing purposes change this return value to all_products[:X] to slice list
+    return all_products
 
 
 def get_product_details(product_id):
