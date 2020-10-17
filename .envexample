@@ -2,7 +2,7 @@
 ENVIRONMENT=
 
 #Django Environment Variables
-SECRET_KEY=
+DJANGO_SECRET_KEY=
 
 #Vinmonopolet API Keys
 VMP_PRIMARY_KEY=
