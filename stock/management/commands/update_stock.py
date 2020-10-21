@@ -71,7 +71,7 @@ class Command(BaseCommand):
                     store_id = vmp_store,
                     defaults={
                     'product_stock' : 0,
-                    'last_product_stock' : current_stock.product_stock if current_stock.product_stock > 0 else None,
+                    'last_product_stock' : current_stock.product_stock if current_stock.product_stock > 0 else current_stock.last_product_stock,
                     'out_of_stock_date': date.today() if current_stock.product_stock > 0 else current_stock.out_of_stock_date
                     }
                 )
