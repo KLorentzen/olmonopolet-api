@@ -64,12 +64,16 @@ class Command(BaseCommand):
                             name = product_details["name"],
                             brewery = product_details['main_producer']['name'],
                             country = product_details["main_country"]["code"],
-                            style = product_details['main_sub_category']['name'],
+                            style = product_details['main_sub_category']['name'] if "main_sub_category" in product_details else None,
                             price = product_details["price"]["value"],
                             alc_volume = product_details['alcohol']['value'],
                             volume = product_details["volume"]["value"],
                             selection = product_details["product_selection"] if "product_selection" in product_details else None,
-                            url = 'https://www.vinmonopolet.no' + product_details["url"])
+                            url = 'https://www.vinmonopolet.no' + product_details["url"],
+                            status = product_details["status"],
+                            buyable = product_details["buyable"],
+                            launch_date = datetime.strptime(product_details["expiredDate"],"%Y-%m-%d") 
+                            ),
 
                     except Exception as err:
                         self.stdout.write(f"Could not insert beer: {product['productId']}")

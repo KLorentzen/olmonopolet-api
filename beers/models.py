@@ -23,19 +23,21 @@ class Beer(models.Model):
     name = models.CharField(max_length=250)
     brewery = models.CharField(max_length=250, blank=True)
     country = models.CharField(max_length=250, blank=True)
-    style = models.CharField(help_text="Beer style listed at Vinmonopolet",max_length=250, blank=True)
+    style = models.CharField(help_text="Beer style listed at Vinmonopolet",max_length=250,null=True, blank=True)
     alc_volume = models.FloatField(help_text="Alcohol volume in %", null=True,blank=True)
     price = models.FloatField(help_text="Product prize in NOK", default= 0.00,  blank=True)
     volume = models.FloatField(help_text="Volume in liters",null=True ,blank=True)
-    selection = models.CharField(help_text='Product selection and ordering range',max_length=250, blank=True)
+    selection = models.CharField(help_text='Product selection and ordering range',max_length=250, null=True, blank=True)
     url = models.URLField(help_text='Full URL to beer at Vinmonopolet',max_length=250, blank=True)
 
-    # TODO: legg til en attributt som holder "buyable" status. den er False dersom varen ikke kan kjøpes, ref før slipp.
+    status = models.CharField(max_length=250, blank=True)
+    buyable = models.BooleanField(help_text='Is beer available for purchase?', default=False)
+    launch_date = models.DateField(help_text='Date when beer was launched', null=True, blank=True)
     
     added_date = models.DateField(auto_now=False, auto_now_add=True)
 
     class Meta:
-        ordering = ["-added_date"]
+        ordering = ['-launch_date', "-added_date"]
     
     def __str__(self):
         return self.name
