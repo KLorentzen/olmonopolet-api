@@ -3,25 +3,33 @@
     <p>Vinmonopolet <i>{{ store.name }}</i> har fylt på i hyllene! </p>
     {% for beer in beers|dictsort:"name" %}
     <ul>
-        <li>
+        <li style="list-style-type: none">
 
             <a href="{{beer.url}}" style="text-decoration: none;">
                 <h3 style="margin:0">{{ beer.name }}</h3>
             </a>
             <ul>
-                <li>Pris: kr {{ beer.price }}</li>
-                <li>Styrke: {{ beer.alc_volume }}%</li>
-                <li>Størrelse: {{ beer.volume }} liter</li>
-                {% for stock in beer.beerstock.all  %}
-                    {% if stock.store_id == store  %}
-                        <li>Lagerstatus: {{ stock.product_stock }} stk</li>
-                    {% endif %}
-                {% endfor %}
-
                 {% with beer.untappd.all|first as untappd  %}
-                    {% if untappd %}
-                    <li>Untappd-skår: <a href="{{untappd.url}}" style="text-decoration: none;">{{ untappd.rating|floatformat:3 }}</a></li>
                     
+                    {% comment %} Viser ølstil fra Untappd dersom det eksisterer mapping, ellers benyttes stil fra VMP {% endcomment %}
+                    {% if untappd %}
+                        <li>Stil: {{ untappd.style }}</li>
+                    {% else %}
+                        <li>Stil: {{ beer.style }}</li>
+                    {% endif %}
+
+                    <li>Pris: kr {{ beer.price }}</li>
+                    <li>Styrke: {{ beer.alc_volume }}%</li>
+                    <li>Størrelse: {{ beer.volume }} liter</li>
+                    {% for stock in beer.beerstock.all  %}
+                        {% if stock.store_id == store  %}
+                            <li>Lagerstatus: {{ stock.product_stock }} stk</li>
+                        {% endif %}
+                    {% endfor %}
+
+                    {% comment %} Viser Untappd-rating dersom det er mapping {% endcomment %}
+                    {% if untappd %}
+                        <li>Untappd-skår: <a href="{{untappd.url}}" style="text-decoration: none;">{{ untappd.rating|floatformat:3 }}</a></li>
                     {% endif %}
                 
                 {% endwith %}
@@ -29,4 +37,5 @@
         </li>
     </ul>
     {% endfor %}
+    <p style="font-size:9px"><i><b>PS:</b> Ølmonopolet er på ingen måte affiliert med Vinmonopolet!</p></i>
 </div>
