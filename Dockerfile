@@ -1,8 +1,14 @@
-FROM python:3.8-slim
+FROM python:3.9.0-slim
 
 # Set environment variables
 ENV PYTHONDONTWRITEBYTECODE 1
 ENV PYTHONUNBUFFERED 1
+
+RUN apt update && apt upgrade -y
+RUN apt install -y libpq-dev gcc
+
+RUN pip install --upgrade pip
+#RUN pip install --upgrade pipenv
 
 # Set work directory in container
 WORKDIR /app
