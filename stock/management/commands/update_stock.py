@@ -11,7 +11,17 @@ from django.core.exceptions import ObjectDoesNotExist
 from datetime import date, datetime
 
 class Command(BaseCommand):
-    help = 'Update beer stock and daily sales from Vinmonopolet'
+    help = '''Update beer stock and daily sales from Vinmonopolet.  
+    Stock for all products fetched by default.  
+    Use option --watchlist for stock update of Watchlist items'''
+
+    
+    def add_arguments(self, parser):
+        parser.add_argument(
+            '--watchlist',
+            action='store_true',
+            help='Update stock for items listen in stock.Watchlist',
+        )
 
     def handle(self, *args, **options):
         
@@ -28,9 +38,13 @@ class Command(BaseCommand):
         # Dictionary with key="store_id" and values are list of beers that are restocked and should be notified per email
         notify_restock = {}
 
-        # Retrieve all beers in database which are not added to WatchList
-        beers = Beer.objects.filter(watchlist = None)
-        # beers = Beer.objects.filter(name__contains='Kveldsbris') | Beer.objects.filter(name__contains='Lervig')
+        if options['watchlist']:
+            # Retrieve beers in WatchList model
+            beers = Beer.objects.all().exclude(watchlist = None)
+        else: 
+            # Retrieve all beers in database which are not added to WatchList
+            beers = Beer.objects.filter(watchlist = None)
+            # beers = Beer.objects.filter(name__contains='Kveldsbris') | Beer.objects.filter(name__contains='Lervig')
 
         for beer in beers:
 
@@ -57,7 +71,7 @@ class Command(BaseCommand):
                     store_id = vmp_store,
                     defaults={
                     'product_stock' : 0,
-                    'last_product_stock' : current_stock.product_stock,
+                    'last_product_stock' : current_stock.product_stock if current_stock.product_stock > 0 else current_stock.last_product_stock,
                     'out_of_stock_date': date.today() if current_stock.product_stock > 0 else current_stock.out_of_stock_date
                     }
                 )

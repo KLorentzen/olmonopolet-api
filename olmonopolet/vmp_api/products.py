@@ -33,7 +33,7 @@ def get_product_details(product_id):
     Returns: 
     dict: JSON with product details if success, otherwise returns False (bool).
     '''
-    product_url = "https://www.vinmonopolet.no/api/products/" + product_id 
+    product_url = f"https://www.vinmonopolet.no/api/products/{product_id}" #+ product_id 
     PARAMS = {"fields": 'FULL'}
 
     # Get details from VMP about product
