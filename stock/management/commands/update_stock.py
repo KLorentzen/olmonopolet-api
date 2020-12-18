@@ -31,6 +31,9 @@ class Command(BaseCommand):
             self.stdout.write(f"Vinmonopolet is not available...")
             return
 
+        # Obtain session ID from VMP
+        vmp_session_cookie = beer_stock.get_VMP_cookies()
+
         # Log when the job is executed
         start_time = datetime.now()
         self.stdout.write(f"Updating product stock @ {datetime.now()}")
@@ -52,7 +55,7 @@ class Command(BaseCommand):
             old_stock = BeerStock.objects.filter(beer_id=beer).values_list("store_id",flat=True)
             
             # Get current stock from VMP
-            stock_all_stores = beer_stock.get_stock_all_stores(beer.beer_id)
+            stock_all_stores = beer_stock.get_stock_all_stores(beer.beer_id, vmp_session_cookie)
             
             # Store IDs of stores with stock > 0
             stores_with_stock = [int(i['name']) for i in stock_all_stores]
