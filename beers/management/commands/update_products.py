@@ -4,6 +4,7 @@ from untappd.models import UntappdMapping
 from django.db.utils import IntegrityError
 from olmonopolet.vmp_api import products as vmp_api_products 
 from olmonopolet.vmp_scraper import product_details as vmp_details
+from olmonopolet.vmp_api import utilities as vmp_utils  
 from olmonopolet.untappd_scraper import mapping 
 from datetime import datetime
 
@@ -23,11 +24,13 @@ class Command(BaseCommand):
         # Log when the job is executed
         self.stdout.write(f"Updating Vinmonopolet products @ {datetime.now()}")
 
-        # TODO: Add functionality to log to file
         new_products = 0
         
         # Get list of all products in database
         db_products = list(Product.objects.values_list('product_id', flat=True))
+
+        # Obtain session ID from VMP
+        vmp_session_cookie = vmp_utils.get_VMP_cookies()
 
         # Retrieves all VMP products currently in stock
         all_products = vmp_api_products.get_all_products()
@@ -39,7 +42,7 @@ class Command(BaseCommand):
                 pass
             else:
                 # Get product details from Vinmonopolet
-                product_details = vmp_api_products.get_product_details(product["productId"])
+                product_details = vmp_api_products.get_product_details(product["productId"], vmp_session_cookie)
 
                 if not product_details:
                     self.stdout.write("Could not connect with Vinmonopolet")

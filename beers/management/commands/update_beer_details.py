@@ -1,8 +1,8 @@
 from django.core.management.base import BaseCommand
 from beers.models import Product, Beer
 from olmonopolet.vmp_api import products as vmp_api_products 
+from olmonopolet.vmp_api import utilities as vmp_utils  
 from datetime import datetime
-from olmonopolet.vmp_api import beer_stock  
 
 
 class Command(BaseCommand):
@@ -17,15 +17,18 @@ class Command(BaseCommand):
         start_time = datetime.now()
         
         # Verify that VMP is online before using the VMP api
-        if not beer_stock.isVMPonline:
+        if not vmp_utils.isVMPonline:
             self.stdout.write(f"Vinmonopolet is not available...")
             return
+
+        # Obtain session ID from VMP
+        vmp_session_cookie = vmp_utils.get_VMP_cookies()
 
         beers = Beer.objects.all()
 
         for beer in beers:
             # Update Beer details from Vinmonopolet
-            beer_details = vmp_api_products.get_product_details(beer.pk)
+            beer_details = vmp_api_products.get_product_details(beer.pk, vmp_session_cookie)
             
             # TODO: Add functionality to notify user if beer with stock becomes "buyable:True"
 

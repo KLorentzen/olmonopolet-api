@@ -24,11 +24,12 @@ def get_all_products():
     return all_products
 
 
-def get_product_details(product_id):
+def get_product_details(product_id, vmp_session_cookie):
     '''Retrieve product details.
 
     Parameters:
     arg1 int: product_id 
+    arg2 obj: httpx.cookie instance from VMP including session ID
 
     Returns: 
     dict: JSON with product details if success, otherwise returns False (bool).
@@ -38,7 +39,7 @@ def get_product_details(product_id):
 
     # Get details from VMP about product
     try:
-        product_details = httpx.get(product_url,params=PARAMS).json()
+        product_details = httpx.get(product_url,params=PARAMS, cookies=vmp_session_cookie).json()
     except Exception as err:
         product_details = False
 

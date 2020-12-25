@@ -4,7 +4,8 @@ from stock.models import BeerStock, WatchList
 from stores.models import Store
 from sales.models import DailySale
 from django.db.utils import IntegrityError
-from olmonopolet.vmp_api import beer_stock  
+from olmonopolet.vmp_api import beer_stock
+from olmonopolet.vmp_api import utilities as vmp_utils  
 from olmonopolet.stock import restock, sales 
 from olmonopolet.notifications import restock as notification
 from django.core.exceptions import ObjectDoesNotExist
@@ -27,12 +28,12 @@ class Command(BaseCommand):
         
         # Check if Vinmonopolet is available
         # TODO: Improve check such that stock is not set to 0 on days with Queue or when stock is set to 0 and set back to the old stock again
-        if not beer_stock.isVMPonline:
+        if not vmp_utils.isVMPonline:
             self.stdout.write(f"Vinmonopolet is not available...")
             return
 
         # Obtain session ID from VMP
-        vmp_session_cookie = beer_stock.get_VMP_cookies()
+        vmp_session_cookie = vmp_utils.get_VMP_cookies()
 
         # Log when the job is executed
         start_time = datetime.now()
