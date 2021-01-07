@@ -31,6 +31,10 @@
                     {% if untappd %}
                         <li>Untappd-skår: <a href="{{untappd.url}}" style="text-decoration: none;">{{ untappd.rating|floatformat:3 }}</a></li>
                     {% endif %}
+
+                    {% if not beer.buyable %}
+                        <li> Lanseringsdato: {{ beer.launch_date|date:"d.m.Y" }} ({{ beer.selection }})</li>
+                    {% endif %}
                 
                 {% endwith %}
             </ul>
