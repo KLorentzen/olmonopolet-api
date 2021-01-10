@@ -25,7 +25,6 @@ def get_daily_beer_sale(beer, store, current_stock, new_stock, stock_before_empt
     """
 
     try:
-        # TODO: Vurdere om det må gjøres noen spesielle hensyn ved overgang mellom dager?!
         # Get current sales for today, if there are any
         sales_today = DailySale.objects.get(
             beer_id=beer, store_id=store, sales_day=date.today()
@@ -37,7 +36,8 @@ def get_daily_beer_sale(beer, store, current_stock, new_stock, stock_before_empt
 
     if new_stock > current_stock and not restock.is_restocked(current_stock,new_stock, stock_before_empty):
         # Subtract sales that were falsly assigned due to VMP setting stock to 0 and then resetting stock
-        accumulated_daily_sale -= stock_before_empty
+        # Accounting for any sales while stock was 0 by subtracting new_stock since this value is < stock_before_empty
+        accumulated_daily_sale -= new_stock
     elif new_stock > current_stock:
         # Re-stock implies no additional sales
         pass

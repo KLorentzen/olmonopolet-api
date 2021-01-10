@@ -118,7 +118,7 @@ class Command(BaseCommand):
                     defaults={
                     'product_stock' : store_stock["stockInfo"]["stockLevel"],
                     'last_product_stock' : None, 
-                    'restock_qty' : restock.get_restock_qty(current_stock, store_stock["stockInfo"]["stockLevel"]) if restock.is_restocked(current_stock, store_stock["stockInfo"]["stockLevel"], last_available_stock) else existing_stock.restock_qty,
+                    'restock_qty' : restock.get_restock_qty(current_stock, store_stock["stockInfo"]["stockLevel"],last_available_stock) if restock.is_restocked(current_stock, store_stock["stockInfo"]["stockLevel"], last_available_stock) else existing_stock.restock_qty,
                     'restock_date' : date.today() if restock.is_restocked(current_stock, store_stock["stockInfo"]["stockLevel"], last_available_stock) else existing_stock.restock_date,
                     'out_of_stock_date' : None
                     }
@@ -142,6 +142,7 @@ class Command(BaseCommand):
                 )
 
                 # All beers that are restocked, and have been out of stock (current stock=0), for a store will be added to notification "restock"
+                # Also beers that are restocked while store stock is falsly set to 0 will be emailed as restocked
                 if restock.is_restocked(current_stock, store_stock["stockInfo"]["stockLevel"], last_available_stock) and current_stock == 0:
                     notify_restock.setdefault(vmp_store,[]).append(beer)
 
