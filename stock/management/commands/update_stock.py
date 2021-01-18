@@ -59,7 +59,7 @@ class Command(BaseCommand):
             stock_all_stores = beer_stock.get_stock_all_stores(beer.beer_id, vmp_session_cookie)
             
             # Store IDs of stores with stock > 0
-            stores_with_stock = [int(i['name']) for i in stock_all_stores]
+            stores_with_stock = [int(i['pointOfService']['name']) for i in stock_all_stores]
 
             empty_stores = filter(lambda x: x not in stores_with_stock,old_stock)
             
@@ -99,8 +99,8 @@ class Command(BaseCommand):
                 self.stdout.write(f"Updated {obj.beer_id.name}, stock: {obj.product_stock}, sales: {sale_obj.beers_sold}, store: {vmp_store}")
                 
             # Filter stock to only write stock for Molde/Egersund
-            for store_stock in filter(lambda x: x["name"] in [str(244),str(209)], stock_all_stores):
-                vmp_store = Store.objects.get(store_id=int(store_stock["name"]))
+            for store_stock in filter(lambda x: x['pointOfService']['name'] in [str(244),str(209)], stock_all_stores):
+                vmp_store = Store.objects.get(store_id=int(store_stock['pointOfService']['name']))
 
                 try:
                     existing_stock = BeerStock.objects.get(beer_id=beer, store_id=vmp_store)
