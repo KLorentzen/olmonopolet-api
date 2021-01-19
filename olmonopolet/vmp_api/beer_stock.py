@@ -12,8 +12,7 @@ def get_stock_all_stores(beer_id, vmp_session_cookie):
     list: List with beer stock details in all VMP stores
     '''
     URL = f"https://www.vinmonopolet.no/api/products/{beer_id}/stock"
-    PARAMS = {"latitude": 0, "longitude": 0, "pageSize": 1000, "fields":'BASIC'}
-
+    PARAMS = {"latitude": 62.7, "longitude": 7.18, "pageSize": 1000, "fields":'BASIC'}
     # Add exception handling
     try:
         beer_stock = httpx.get(URL, params=PARAMS, cookies=vmp_session_cookie, allow_redirects=True)
