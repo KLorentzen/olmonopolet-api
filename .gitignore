@@ -63,6 +63,9 @@ db.sqlite3-journal
 migrations
 staticfiles
 
+# Tailwind Stuff
+node_modules
+
 # Flask stuff:
 instance/
 .webassets-cache
