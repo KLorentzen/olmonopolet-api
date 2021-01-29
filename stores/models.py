@@ -9,6 +9,9 @@ class Store(models.Model):
     city = models.CharField( max_length=250)
     street_address = models.CharField( max_length=250)
     postalcode = models.IntegerField()
+    latitude = models.FloatField(help_text='GPS latitude', default=0.0)
+    longitude = models.FloatField(help_text='GPS longitude', default=0.0)
+    active = models.BooleanField(help_text='Is this store active on Ølmonopolet?', default=False)
 
     def __str__(self):
         return self.name
