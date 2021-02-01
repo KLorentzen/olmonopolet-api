@@ -21,6 +21,7 @@ urlpatterns = [
     path('kjelleren/', admin.site.urls),
     path('api/v1/',include('api.urls')),
     path('api-auth/',include('rest_framework.urls')),
-    path('', views.frontend),
+    path('beers/', include('beers.urls')),
+    path('', include('stores.urls')),
     #TODO: Add 404 for fallthrough paths
 ]
