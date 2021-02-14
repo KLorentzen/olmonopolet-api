@@ -1,34 +1,76 @@
-{% extends '_base.html' %}
+{% comment %} Base HTML file to be extended {% endcomment %}
+{% load static %}
 
-{% block content %}
+<!DOCTYPE html>
+<html lang="en">
 
-    {% comment %} Jumbotron {% endcomment %}
-    <div class="sticky top-0 bg-white p-2">
-        <div class="flex justify-center mt-8 mb-12">
-            <h1 class="text-7xl">Ølmonopolet!</h1>
-        </div>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="{% static 'css/base.css' %}">
+    <script src="https://kit.fontawesome.com/10bd335677.js" crossorigin="anonymous"></script>
+    <title>{% block title %}Ølmonopolet{% endblock title %}</title>
+</head>
 
-        {% comment %} Store Search Bar {% endcomment %}
-        <div class="flex justify-center my-5 h-10 ">
-            <div class="group w-1/3 flex justify-center items-center text-gray-400  focus-within:text-blue-400 ">
-                <input class="flex-grow rounded-lg  p-2 border-gray-400 border focus:outline-none focus:border-blue-400 focus:text-gray-600" type="text" name="search-store" placeholder="Søk etter Vinmonopol...">
-                <i class="fab fa-searchengin fa-2x -mx-10  "></i>
+<body>
+    <div class="container mx-auto">
+
+        {% comment %} Logo {% endcomment %}
+        <div class="flex justify-center mt-20">
+            <div class='bg-gray-400 w-1/5 h-40'>
+                INSERT LOGO
             </div>
         </div>
-    </div>
 
-    {% comment %} Store Cards {% endcomment %}
-    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-1 justify-right">
-        {% for store in stores %}
-            <div class="store-card m-4 border-solid border rounded-md border-gray-400 hover:shadow-md hover:border-yellow-500">
+        {% comment %} Jumbotron {% endcomment %}
+        <div class="sticky top-0 bg-white p-2">
+            <div class="flex justify-center mt-8 mb-8">
+                <div class="flex flex-col">
+                    <div>
+                        <h1 class="font-light text-center text-7xl">Ølmonopolet!</h1>
+                    </div>
+                    <div class='mt-2'>
+                        Nå kan du endelig få full oversikt over varelageret på ditt lokale Vinmonopol!
+                    </div>
+                </div>
+            </div>
+
+            {% comment %} Store Search Bar {% endcomment %}
+            <div class="flex justify-center my-5 h-10 ">
+                <div
+                    class="group w-1/3 flex justify-center items-center text-gray-400  focus-within:text-blue-400 ">
+                    <input
+                        class="flex-grow rounded-lg  p-2 border-gray-400 border focus:outline-none focus:border-blue-400 focus:text-gray-600"
+                        type="text" name="search-store" placeholder="Søk etter Vinmonopol...">
+                    <i class="fab fa-searchengin fa-2x -mx-10  "></i>
+                </div>
+            </div>
+        </div>
+
+        {% comment %} Store Cards {% endcomment %}
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-1 justify-right">
+            {% for store in stores %}
+            <div
+                class="store-card m-4 border-solid border rounded-md border-gray-400 hover:shadow-md hover:border-yellow-500">
                 <a href="{% url 'beer_list' store.store_id %}">
                     <div class="flex flex-col rounded-md p-2">
                         <span class="text-lg  font-semibold">{{store.name}}</span>
                         <span class="-mt-2 font-light">Kategori: {{store.category}} </span>
-                        <span class="font-light">{{store.street_address}}, {{ store.postalcode}} {{ store.city }} </span>
+                        <span class="font-light">{{store.street_address}}, {{ store.postalcode}} {{ store.city }}
+                        </span>
                     </div>
                 </a>
             </div>
-        {% endfor %}
+            {% endfor %}
+        </div>
     </div>
-{% endblock content %}
+</body>
+
+
+<script src="https://code.jquery.com/jquery-3.5.1.min.js"
+    integrity="sha256-9/aliU8dGd2tb6OSsuzixeV4y/faTqgFtohetphbbj0=" crossorigin="anonymous"></script>
+<script src="{% static 'js/base.js' %}"></script>
+{% comment %} Blcok to include page specific Javascript {% endcomment %}
+{% block javascript %}{% endblock javascript %}
+
+</html>

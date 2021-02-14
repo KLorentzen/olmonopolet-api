@@ -1,0 +1,28 @@
+{% extends '_base.html' %}
+
+{% block content %}
+
+<!-- Header Info -->
+
+<div class="flex sticky top-0 py-7 bg-white ">
+    <div class="w-full text-center h-auto border-b-2 border-gray-300">
+        Her kommer en kul seksjon med masse informasjon!
+
+        {% comment %} Search Beers {% endcomment %}
+        <div class="flex justify-center my-5 h-10 ">
+            <div class="group w-1/3 flex justify-center items-center text-gray-400  focus-within:text-yellow-500 ">
+                <input
+                    class="flex-grow rounded-lg  p-2 border-gray-400 border focus:outline-none focus:border-yellow-500 focus:text-gray-600"
+                    type="text" name="search-store" placeholder="Søk gjennom lageret hos {{store.name}}...">
+                <i class="fas fa-beer fa-2x -mx-10  "></i>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Main Content -->
+<div id='content'>
+    {% include 'stubs/store_inventory.html' %}
+</div>
+
+{% endblock content %}

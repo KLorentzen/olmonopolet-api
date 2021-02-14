@@ -1,6 +1,7 @@
 from django.db import models
 from beers.models import Beer
 from stores.models import Store
+from datetime import date
 
 # Create your models here.
 class BeerStock(models.Model):
@@ -25,6 +26,16 @@ class BeerStock(models.Model):
     def __str__(self):
         # Return the name of the beer_id based on relationship
         return self.beer_id.name
+    
+    def is_new(self):
+        '''
+        Tags beer as "new" if it was restocked within the last 7 days
+        '''
+        _delta = date.today() - self.restock_date 
+        if _delta.days > 7:
+            return False
+        else:
+            return True
 
 class WatchList(models.Model):
     '''

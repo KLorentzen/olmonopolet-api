@@ -1,6 +1,6 @@
 from django.urls import path, include
-from .views import BeerStockList
+from .views import BeerStockListView
 
 urlpatterns = [
-    path('',BeerStockList.as_view()),
+    
 ]
