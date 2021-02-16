@@ -1,0 +1,15 @@
+{% for store in stores %}
+    <a href="{% url 'beer_list' store.store_id %}">
+        <div class="flex justify-between text-sm hover:bg-blue-50">
+            <div class="mx-2 py-1">
+                <div class="font-bold">{{ store.name }}</div>
+                <div class="text-xs">{{ store.street_address}}</div>
+                <div class="text-xs">{{ store.postalcode}} {{ store.city }}</div>
+            </div>
+            <div class="mx-2 py-1">
+                <span class="">Kategori: </span>
+                <span class="">{{ store.category }}/7</span>
+            </div>
+        </div>
+    </a>
+{% endfor %}
