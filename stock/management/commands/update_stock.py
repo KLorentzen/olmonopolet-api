@@ -146,6 +146,15 @@ class Command(BaseCommand):
                 if restock.is_restocked(current_stock, store_stock["stockInfo"]["stockLevel"], last_available_stock) and current_stock == 0:
                     notify_restock.setdefault(vmp_store,[]).append(beer)
 
+                    # Update date when stock was completely re-stocked for given beer
+                    obj, created = BeerStock.objects.update_or_create(
+                    beer_id = beer,
+                    store_id = vmp_store,
+                    defaults={
+                        'complete_restock_date' : date.today(),
+                    }
+                )
+
                 self.stdout.write(f"Updated {obj.beer_id.name}, stock: {obj.product_stock}, sales: {sale_obj.beers_sold}, store: {vmp_store}")
         
         
