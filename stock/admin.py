@@ -3,7 +3,7 @@ from.models import BeerStock, WatchList
 
 
 class BeerStockAdmin(admin.ModelAdmin):
-    list_display = ('beer_id','store_id', 'product_stock', 'restock_qty', 'restock_date', 'out_of_stock_date', 'last_updated')
+    list_display = ('beer_id','store_id', 'product_stock', 'restock_qty', 'restock_date', 'complete_restock_date', 'out_of_stock_date', 'last_updated')
     search_fields = ('beer_id__name', )
 
 class WatchListAdmin(admin.ModelAdmin):
