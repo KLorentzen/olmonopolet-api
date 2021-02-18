@@ -37,7 +37,7 @@
 
             {% comment %} Store Search Bar {% endcomment %}
             <div class="flex justify-center mt-5 h-10">
-                <div class="flex justify-center items-center w-2/3 md:w-1/4 rounded-lg border border-gray-400 focus-within:border-blue-400  text-gray-400  focus-within:text-blue-400 ">
+                <div class="flex justify-center items-center w-full md:max-w-md rounded-lg border border-gray-400 focus-within:border-blue-400  text-gray-400  focus-within:text-blue-400 ">
                     <input
                         class="flex-grow  m-2 outline-none focus:text-gray-600"
                         type="text" name="query" placeholder="Søk etter Vinmonopol..."
@@ -48,7 +48,7 @@
 
             {% comment %} VMP Store Search Results {% endcomment %}
             <div class="flex justify-center">
-                <div id="store_search" class="flex flex-col w-1/4 border rounded-lg divide-y divide-solid">
+                <div id="store_search" class="flex flex-col w-full md:max-w-md border rounded-lg divide-y divide-solid">
                 <!-- Search results will be injected here -->
                 </div>
             </div>
