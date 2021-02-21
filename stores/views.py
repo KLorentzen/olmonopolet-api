@@ -13,11 +13,11 @@ def store_search(request):
     # Returns no stores if query string is empty ('')
     stores = None
 
-    # Check that query is not empty
+    # Check that store query is not empty
     if request.POST["query"] != '':
         # Fetch all stores that math the query string
-        stores = Store.objects.filter(name__icontains=request.POST["query"])
-    return render(request, 'stubs/store_search.html', {'stores': stores})
+        stores = Store.objects.filter(active=True).filter(name__icontains=request.POST["query"])
+    return render(request, 'stubs/store_search.html', {'stores': stores, 'query':request.POST["query"]})
 
 # Regular Views
 class StoreView(TemplateView):
