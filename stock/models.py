@@ -15,7 +15,7 @@ class BeerStock(models.Model):
     
     restock_qty = models.BigIntegerField(help_text='Quantity of new products from last re-stock')
     restock_date = models.DateField(help_text='Date when product was last re-stocked',auto_now=False, auto_now_add=False)
-    complete_restock_date = models.DateField(help_text='Date when product was completely restocked (stock=0 before re-stock)', auto_now=False, auto_now_add=False)
+    complete_restock_date = models.DateField(help_text='Date when product was completely restocked (stock=0 before re-stock)', auto_now=False, auto_now_add=True)
     out_of_stock_date = models.DateField(help_text='Date when product was sold out (null if in stock)', auto_now=False, auto_now_add=False, blank=True, null=True)
     last_updated = models.DateTimeField(auto_now=True)
     created = models.DateField(auto_now_add=True)

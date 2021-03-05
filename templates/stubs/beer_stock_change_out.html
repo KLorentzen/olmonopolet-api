@@ -1,0 +1,41 @@
+{% comment %} Regroup Stock Change beers by the date they went out of stock {% endcomment %}
+{% regroup stock_change by out_of_stock_date as stock_change_list %}
+
+{% comment %} Iterate across all days when beers went out of stock {% endcomment %}
+{% for stock_change in stock_change_list %}
+    
+    {% comment %} stock_change Section {% endcomment %}
+    <div class="flex flex-col w-full lg:w-3/5 border shadow border-gray-700 rounded-md my-2 divide-y divide-solid divide-gray-700 overflow-hidden">
+        
+        {% comment %} Date Beer went out of Stock {% endcomment %}
+        <div class="font-semibold text-center bg-red-200">
+            {{ stock_change.grouper|date:"l j. F"|capfirst }}
+        </div>
+
+        {% comment %} Beers Out of Stock {% endcomment %}
+        {% for beer in stock_change.list %}
+        {% with beer.beer_id.untappd.all|first as untappd %}
+
+        {% comment %} Beer Details{% endcomment %}
+        <div class="flex justify-between py-1">
+            <div class="flex flex-col mx-2 text-sm font-light ">
+                
+                <div class="font-medium">
+                    {{beer}}
+                </div>
+                <div class="">
+                    {{beer.beer_id.brewery}}
+                </div>
+                <div>{% if untappd.style %} {{ untappd.style }} {% else %} {{ beer.beer_id.style }} {% endif %}</div>
+
+            </div>
+        </div>
+        {% endwith %}
+        {% endfor %}
+    </div>
+{% endfor %}
+
+{% comment %} Infinite Scroll {% endcomment %}
+{% if stock_change.has_next%}
+    <div class="" hx-get="{% url 'stock_change_out' store_id %}?page={{ stock_change.next_page_number }}" hx-trigger="revealed" hx-swap="outerHTML" hx-indicator=".htmx-indicator"></div>
+{% endif %}

@@ -22,6 +22,7 @@ urlpatterns = [
     path('api/v1/',include('api.urls')),
     path('api-auth/',include('rest_framework.urls')),
     path('beers/', include('beers.urls')),
+    path('stock/', include('stock.urls')),
     path('', include('stores.urls')),
     #TODO: Add 404 for fallthrough paths
 ]

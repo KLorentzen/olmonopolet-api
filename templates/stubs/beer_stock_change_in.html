@@ -1,0 +1,94 @@
+{% load static %}
+
+{% comment %} Regroup Stock Change beers by the date they were restocked {% endcomment %}
+{% regroup stock_change by complete_restock_date as stock_change_list %}
+
+{% comment %} Iterate across all days when there has been restock event {% endcomment %}
+{% for stock_change in stock_change_list %}
+    
+    {% comment %} Stock_change Section {% endcomment %}
+    <div class="flex flex-col w-full lg:w-3/5 border shadow border-gray-700 rounded-md my-2 divide-y divide-solid divide-gray-700 overflow-hidden">
+        
+        {% comment %} Date of Restock {% endcomment %}
+        <div class="font-semibold text-center bg-green-200">
+            {{ stock_change.grouper|date:"l j. F"|capfirst }}
+        </div>
+
+        {% comment %} Beers Restocked {% endcomment %}
+        {% for beer in stock_change.list %}
+        {% with beer.beer_id.untappd.all|first as untappd %}
+
+        {% comment %} Beer List Item{% endcomment %}
+        <div class="flex justify-between py-1">
+            
+            <div class="flex flex-col mx-2 text-sm font-light ">
+                
+                <div class="font-medium">
+                    {{beer}}
+                </div>
+                <div class="">
+                    {{beer.beer_id.brewery}}
+                </div>
+                <div>{% if untappd.style %} {{ untappd.style }} {% else %} {{ beer.beer_id.style }} {% endif %}</div>
+
+                {% comment %} Additional Beer Details {% endcomment %}
+                <div class="flex">
+                    <div class="flex items-center mr-2">
+                        <i class="fas fa-money-bill-wave text-green-500 mr-1"></i>
+                        <div class=""> {{ beer.beer_id.price }}kr </div>
+                    </div>
+
+                    {% comment %} Beer Alcohol Volume {% endcomment %}
+                    <div class="flex items-center mr-2">
+                        <i class="fas fa-percent fa-xs mr-1"></i>
+                        <div class="">{{ beer.beer_id.alc_volume }}</div>
+                    </div>
+
+                    {% comment %} Beer Volume {% endcomment %}
+                    <div class="flex items-center mr-2">
+                        <i class="fas fa-glass-whiskey text-gray-700 mr-1"></i>
+                        <div class="">{{ beer.beer_id.volume }}L</div>
+                    </div>
+
+                    {% comment %} Stock {% endcomment %}
+                    <div class="flex items-center mr-2">
+                        <i class="fas fa-box text-yellow-900 mr-1"></i>
+                        <div class=""> {{ beer.restock_qty }} </div>
+                    </div>
+                
+                    {% if untappd %}
+                        {% comment %} Untappd Rating {% endcomment %}
+                        <a href="{{ untappd.url }}">
+                            <div class="flex items-center mr-2">
+                                <i class="fab fa-untappd text-yellow-400 mr-1"></i>
+                                <div class=""> {{ untappd.rating|floatformat:3 }} </div>
+                            </div>
+                        </a>
+                        {% comment %} Untappd Unique Check-ins {% endcomment %}
+                        <div class="flex items-center mr-2">
+                            <i class="fas fa-users mr-1"></i>
+                            <div class=""> {{ untappd.check_in_unique }} </div>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+
+            {% comment %} Image {% endcomment %}
+            {% comment %} TODO: Legg inn logikk som bestemmer at man bruker Ølmonopolet default dersom Untappd default dukker opp. Man kan evt også benytte sjekke om vinmonopolet har bilde for ølen {% endcomment %}
+            <div class="place-self-center mx-4">
+                {% if untappd %}
+                    <img class="w-20 h-20 object-scale-down" src="{{ untappd.img_url }}" alt="">
+                {% else %}
+                    <img class="w-20 h-20 object-scale-down" src="{% static 'images/MissingBeerImage.png' %}" alt="">
+                {% endif %}
+            </div>
+        </div>
+        {% endwith %}
+        {% endfor %}
+    </div>
+{% endfor %}
+
+{% comment %} Infinite Scroll {% endcomment %}
+{% if stock_change.has_next%}
+    <div class="" hx-get="{% url 'stock_change_in' store_id %}?page={{ stock_change.next_page_number }}" hx-trigger="revealed" hx-swap="outerHTML" hx-indicator=".htmx-indicator"></div>
+{% endif %}
