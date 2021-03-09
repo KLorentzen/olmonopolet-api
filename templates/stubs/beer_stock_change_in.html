@@ -6,13 +6,21 @@
 {% comment %} Iterate across all days when there has been restock event {% endcomment %}
 {% for stock_change in stock_change_list %}
     
-    {% comment %} Stock_change Section {% endcomment %}
-    <div class="flex flex-col w-full lg:w-3/5 border shadow border-gray-700 rounded-md my-2 divide-y divide-solid divide-gray-700 overflow-hidden">
-        
+    <div class="w-full lg:w-3/5 text-left mt-4 mb-2">
         {% comment %} Date of Restock {% endcomment %}
-        <div class="font-semibold text-center bg-green-200">
+        <div class="font-semibold text-2xl">
             {{ stock_change.grouper|date:"l j. F"|capfirst }}
         </div>
+        {% comment Antall øl som er nye for dagen %}  {% endcomment %}
+        <div class="text-base italic -mt-1">
+            <span class="font-semibold">{{ stock_change.list|length }}</span><span> øl inn på lager</span>
+        </div>
+    </div>
+    
+
+    {% comment %} Stock_change Section {% endcomment %}
+    <div class="flex flex-col w-full lg:w-3/5 border shadow border-gray-700 rounded-md divide-y divide-solid divide-gray-700 overflow-hidden">
+        
 
         {% comment %} Beers Restocked {% endcomment %}
         {% for beer in stock_change.list %}
@@ -23,9 +31,12 @@
             
             <div class="flex flex-col mx-2 text-sm font-light ">
                 
-                <div class="font-medium">
-                    {{beer}}
-                </div>
+                <a href="{{ beer.beer_id.url }}" target="_blank">
+                    <div class="font-medium">
+                        {{beer}}
+                    </div>
+                </a>
+
                 <div class="">
                     {{beer.beer_id.brewery}}
                 </div>
@@ -58,7 +69,7 @@
                 
                     {% if untappd %}
                         {% comment %} Untappd Rating {% endcomment %}
-                        <a href="{{ untappd.url }}">
+                        <a href="{{ untappd.url }}" target="_blank">
                             <div class="flex items-center mr-2">
                                 <i class="fab fa-untappd text-yellow-400 mr-1"></i>
                                 <div class=""> {{ untappd.rating|floatformat:3 }} </div>
@@ -77,7 +88,9 @@
             {% comment %} TODO: Legg inn logikk som bestemmer at man bruker Ølmonopolet default dersom Untappd default dukker opp. Man kan evt også benytte sjekke om vinmonopolet har bilde for ølen {% endcomment %}
             <div class="place-self-center mx-4">
                 {% if untappd %}
-                    <img class="w-20 h-20 object-scale-down" src="{{ untappd.img_url }}" alt="">
+                    <a href="{{ untappd.url }}" target="_blank">
+                        <img class="w-20 h-20 object-scale-down" src="{{ untappd.img_url }}" alt="">
+                    </a>
                 {% else %}
                     <img class="w-20 h-20 object-scale-down" src="{% static 'images/MissingBeerImage.png' %}" alt="">
                 {% endif %}
