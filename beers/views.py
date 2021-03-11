@@ -4,8 +4,9 @@ from .models import Beer
 from stores.models import Store
 from .serializers import BeerSerializer
 from rest_framework import generics
-from django.views.generic import TemplateView
+from django.views.generic import TemplateView, ListView
 from django.db.models import F, Q
+from django.utils import timezone
 
 # Create your views here.
 
@@ -50,6 +51,19 @@ class BeerStockView(TemplateView):
         context = super().get_context_data(**kwargs)
         context['store'] = Store.objects.get(store_id=self.kwargs['store_id'])
         return context
+
+class ReleaseListView(ListView):
+    template_name = "release.html"
+    context_object_name = 'beers'
+
+    # Retrieve all beers scheduled for launch in the future
+    queryset = Beer.objects.filter(launch_date__gte=timezone.now()).order_by('launch_date','name')
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['store'] = Store.objects.get(store_id=self.kwargs['store_id'])
+        return context
+
 
 # API Views
 class BeerList(generics.ListAPIView):
