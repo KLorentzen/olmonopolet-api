@@ -16,19 +16,23 @@
             </div>
             <div class="flex justify-center">
                 <div class="">
-                    <button class="focus:outline-none hover:bg-green-600 hover:bg-opacity-80 m-2 p-2 rounded-md bg-gray-300"
+                    <button class="focus:outline-none hover:bg-green-600 hover:bg-opacity-80 m-2 py-1 px-2 rounded-md bg-gray-300"
                     hx-trigger="click" hx-target="#beer_stock_change" hx-post="{% url 'stock_change_in' store.store_id %}" hx-indicator=".htmx-indicator">
-                        <i class="fas fa-plus mx-1 "></i>
-                        <span class="font-semibold">Nytt på lager</span>
+                        <i class="fas fa-plus fa-sm mx-1 "></i>
+                        <span class="text-sm font-semibold">Nytt på lager</span>
                     </button>
                 </div>
                 <div class="">
-                    <button class="focus:outline-none hover:bg-red-600 hover:bg-opacity-80 m-2 p-2 rounded-md bg-gray-300"
+                    <button class="focus:outline-none hover:bg-red-600 hover:bg-opacity-80 m-2 py-1 px-2 rounded-md bg-gray-300"
                     hx-trigger="click" hx-target="#beer_stock_change" hx-post="{% url 'stock_change_out' store.store_id %}" hx-indicator=".htmx-indicator">
-                        <i class="fas fa-minus mx-1"></i>
-                        <span class="font-semibold">Utseld</span>
+                        <i class="fas fa-minus fa-sm mx-1"></i>
+                        <span class="text-sm font-semibold">Utseld</span>
                     </button>
                 </div>
+            </div>
+            {% comment %} Time When Stock was last updated {% endcomment %}
+            <div class="flex justify-center text-xs">
+                Sist oppdatert: {{ last_updated|date:"j. F H:i" }}
             </div>
         </div>
     </div>

@@ -3,7 +3,7 @@
 {% for beer in beers %}
 {% with beer.untappd.all|first as untappd %}
 {% with beer.beerstock.all|first as stock %}
-    <div class="rounded-md border shadow mx-3 border-gray-700">
+    <div class="rounded-md border shadow border-gray-700">
 
         <div class="flex justify-between my-2">
 
@@ -15,7 +15,7 @@
                 <div>{% if untappd.style %} {{ untappd.style }} {% else %} {{ beer.style }} {% endif %}</div>
 
                 {% comment %} Beer Detail Section {% endcomment %}
-                <div class="flex flex-col border-t mt-2 pt-2">
+                <div class="flex flex-col border-t border-gray-400 mt-2 pt-2">
                     
                     {% comment %} Beer Selection {% endcomment %}
                     <div class="italic">{{ beer.selection }}</div>
@@ -52,7 +52,7 @@
                         <div class="flex">
 
                             {% comment %} Untappd Rating {% endcomment %}
-                            <a href="{{ untappd.url }}">
+                            <a href="{{ untappd.url }}" target="_blank">
                                 <div class="flex items-center mr-2">
                                     <i class="fab fa-untappd text-yellow-400 mr-1"></i>
                                     <div class=""> {{ untappd.rating|floatformat:3 }} </div>
@@ -114,3 +114,12 @@
         <div class="" hx-get="{% url 'store_beers' store_id %}?page={{ beers.next_page_number }}" hx-trigger="revealed" hx-swap="outerHTML" hx-indicator=".htmx-indicator"></div>
     {% endif %}
 {% endif %}
+
+<script>
+    // Scrolls to top of page
+    function scrollToTop() {
+        $(window).scrollTop(0);
+    }
+    // When content is loaded scroll to top
+    $( window ).ready(scrollToTop);
+</script>
