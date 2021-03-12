@@ -4,7 +4,7 @@ from .models import Beer
 from stores.models import Store
 from .serializers import BeerSerializer
 from rest_framework import generics
-from django.views.generic import TemplateView, ListView
+from django.views.generic import TemplateView
 from django.db.models import F, Q
 from django.utils import timezone
 
@@ -43,6 +43,19 @@ def beer_stock_search(request, store_id):
         return redirect('store_beers', store_id)
     return render(request, 'stubs/store_inventory.html', {'beers': queryset, 'store_id': store_id})
 
+def beer_release(request):
+    '''
+    Return all beers which are to be released/launched in the future
+    Paginated in order to use infinite scroll
+    '''
+    queryset = Beer.objects.filter(launch_date__gte=timezone.now()).order_by('launch_date', 'selection', 'name')
+    paginator = Paginator(queryset, 50, 0)
+
+    page_number = request.GET.get('page')
+    beers = paginator.get_page(page_number)
+
+    return render(request, 'stubs/beer_release.html', {'beers': beers})
+
 # Regular Views
 class BeerStockView(TemplateView):
     template_name = "beer_stock.html"
@@ -52,12 +65,8 @@ class BeerStockView(TemplateView):
         context['store'] = Store.objects.get(store_id=self.kwargs['store_id'])
         return context
 
-class ReleaseListView(ListView):
+class ReleaseListView(TemplateView):
     template_name = "release.html"
-    context_object_name = 'beers'
-
-    # Retrieve all beers scheduled for launch in the future
-    queryset = Beer.objects.filter(launch_date__gte=timezone.now()).order_by('launch_date','name')
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
