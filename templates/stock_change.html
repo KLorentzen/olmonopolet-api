@@ -14,17 +14,23 @@
             <div class="mx-auto w-3/5 p-2">
                 Få kontroll over kva øl som har kome inn på lager og kva øl som har vore utseld ved Vinmonopolet <span class="italic font-semibold">{{ store }}</span>.
             </div>
-            <div class="flex justify-center">
-                <div class="">
-                    <button class="focus:outline-none hover:bg-green-600 hover:bg-opacity-80 m-2 py-1 px-2 rounded-md bg-gray-300"
-                    hx-trigger="click" hx-target="#beer_stock_change" hx-post="{% url 'stock_change_in' store.store_id %}" hx-indicator=".htmx-indicator">
+
+            {% comment %} Buttons to select restock/out of stock {% endcomment %}
+            <div x-data="{ stock_in: true, stock_out: false }" class="flex justify-center">
+                <div class="" >
+                    <button class="focus:outline-none border border-transparent hover:border-gray-900 m-2 py-1 px-2 rounded-md"
+                        :class="{ 'bg-green-300': stock_in, 'bg-gray-200': !stock_in }"
+                        @click="stock_in=true;stock_out=false"
+                        hx-trigger="click" hx-target="#beer_stock_change" hx-post="{% url 'stock_change_in' store.store_id %}" hx-indicator=".htmx-indicator">
                         <i class="fas fa-plus fa-sm mx-1 "></i>
                         <span class="text-sm font-semibold">Nytt på lager</span>
                     </button>
                 </div>
                 <div class="">
-                    <button class="focus:outline-none hover:bg-red-600 hover:bg-opacity-80 m-2 py-1 px-2 rounded-md bg-gray-300"
-                    hx-trigger="click" hx-target="#beer_stock_change" hx-post="{% url 'stock_change_out' store.store_id %}" hx-indicator=".htmx-indicator">
+                    <button class="focus:outline-none border border-transparent hover:border-gray-900 m-2 py-1 px-2 rounded-md bg-gray-300"
+                        :class="{ 'bg-red-300': stock_out, 'bg-gray-200': !stock_out }"
+                        @click="stock_in=false;stock_out=true"
+                        hx-trigger="click" hx-target="#beer_stock_change" hx-post="{% url 'stock_change_out' store.store_id %}" hx-indicator=".htmx-indicator">
                         <i class="fas fa-minus fa-sm mx-1"></i>
                         <span class="text-sm font-semibold">Utseld</span>
                     </button>
