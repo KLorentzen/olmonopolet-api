@@ -20,7 +20,7 @@
                 <div class="" >
                     <button class="focus:outline-none border border-transparent hover:border-gray-900 m-2 py-1 px-2 rounded-md"
                         :class="{ 'bg-green-300': stock_in, 'bg-gray-200': !stock_in }"
-                        @click="stock_in=true;stock_out=false"
+                        @click="stock_in=true;stock_out=false;scrollTo(0,0);"
                         hx-trigger="click" hx-target="#beer_stock_change" hx-post="{% url 'stock_change_in' store.store_id %}" hx-indicator=".htmx-indicator">
                         <i class="fas fa-plus fa-sm mx-1 "></i>
                         <span class="text-sm font-semibold">Nytt på lager</span>
@@ -29,7 +29,7 @@
                 <div class="">
                     <button class="focus:outline-none border border-transparent hover:border-gray-900 m-2 py-1 px-2 rounded-md bg-gray-300"
                         :class="{ 'bg-red-300': stock_out, 'bg-gray-200': !stock_out }"
-                        @click="stock_in=false;stock_out=true"
+                        @click="stock_in=false;stock_out=true;scrollTo(0,0);"
                         hx-trigger="click" hx-target="#beer_stock_change" hx-post="{% url 'stock_change_out' store.store_id %}" hx-indicator=".htmx-indicator">
                         <i class="fas fa-minus fa-sm mx-1"></i>
                         <span class="text-sm font-semibold">Utseld</span>

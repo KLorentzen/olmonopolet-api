@@ -41,7 +41,7 @@ def beer_stock_search(request, store_id):
     else:
         # Returns all beers in stock if query string is empty ('')
         return redirect('store_beers', store_id)
-    return render(request, 'stubs/store_inventory.html', {'beers': queryset, 'store_id': store_id})
+    return render(request, 'stubs/store_inventory.html', {'beers': queryset, 'store_id': store_id, 'search':True})
 
 def beer_release(request):
     '''
