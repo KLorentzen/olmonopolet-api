@@ -115,11 +115,9 @@
     {% endif %}
 {% endif %}
 
-<script>
-    // Scrolls to top of page
-    function scrollToTop() {
-        $(window).scrollTop(0);
-    }
-    // When content is loaded scroll to top
-    $( window ).ready(scrollToTop);
-</script>
+{% if search %}
+    <script>
+        // Scroll to top when a search is performed
+        scrollTo(0,0);
+    </script>
+{% endif %}
