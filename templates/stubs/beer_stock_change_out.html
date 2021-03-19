@@ -97,12 +97,3 @@
 {% if stock_change.has_next%}
     <div class="" hx-get="{% url 'stock_change_out' store_id %}?page={{ stock_change.next_page_number }}" hx-trigger="revealed" hx-swap="outerHTML" hx-indicator=".htmx-indicator"></div>
 {% endif %}
-
-<script>
-    // Scrolls to top of page
-    function scrollToTop() {
-        $(window).scrollTop(0);
-    }
-    // When content is loaded scroll to top
-    $( window ).ready(scrollToTop);
-</script>
