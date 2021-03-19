@@ -18,7 +18,7 @@
             {% comment %} Buttons to select restock/out of stock {% endcomment %}
             <div x-data="{ stock_in: true, stock_out: false }" class="flex justify-center">
                 <div class="" >
-                    <button class="focus:outline-none border border-transparent hover:border-gray-900 m-2 py-1 px-2 rounded-md"
+                    <button class="focus:outline-none border border-transparent hover:border-gray-900 m-2 py-1 px-2 rounded-md transform ease-in-out duration-200 hover:scale-110"
                         :class="{ 'bg-green-300': stock_in, 'bg-gray-200': !stock_in }"
                         @click="stock_in=true;stock_out=false;scrollTo(0,0);"
                         hx-trigger="click" hx-target="#beer_stock_change" hx-post="{% url 'stock_change_in' store.store_id %}" hx-indicator=".htmx-indicator">
@@ -27,7 +27,7 @@
                     </button>
                 </div>
                 <div class="">
-                    <button class="focus:outline-none border border-transparent hover:border-gray-900 m-2 py-1 px-2 rounded-md bg-gray-300"
+                    <button class="focus:outline-none border border-transparent hover:border-gray-900 m-2 py-1 px-2 rounded-md bg-gray-300 transform ease-in-out duration-200 hover:scale-110"
                         :class="{ 'bg-red-300': stock_out, 'bg-gray-200': !stock_out }"
                         @click="stock_in=false;stock_out=true;scrollTo(0,0);"
                         hx-trigger="click" hx-target="#beer_stock_change" hx-post="{% url 'stock_change_out' store.store_id %}" hx-indicator=".htmx-indicator">
