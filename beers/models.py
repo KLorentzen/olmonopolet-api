@@ -1,4 +1,6 @@
 from django.db import models
+from django.templatetags.static import static
+from django.core.exceptions import ObjectDoesNotExist
 
 # Create your models here.
 class Product(models.Model):
@@ -41,5 +43,21 @@ class Beer(models.Model):
     
     def __str__(self):
         return self.name
+
+    def get_image_url(self):
+        '''
+        Choose the correct image url for a Beer 
+          1. Return Untappd image URL
+          2. Return default image URL (static file)
+        '''
+
+        try:
+            if self.untappd.img_url != 'https://untappd.akamaized.net/site/assets/images/temp/badge-beer-default.png':
+                # Use Untappd image URL in cases it is not the 'default' Untappd Beer Image
+                return self.untappd.img_url
+            else:
+                return static('images/MissingBeerImage.png')
+        except ObjectDoesNotExist:
+            return static('images/MissingBeerImage.png')
 
     
