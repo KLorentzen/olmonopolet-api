@@ -21,7 +21,7 @@
                     <div class="italic">{{ beer.selection }}</div>
 
                     {% comment %} Vinmonopolet Detail Section {% endcomment %}
-                    <div class="flex">
+                    <div class="flex flex-wrap">
                         {% comment %} Beer Price {% endcomment %}
                         <div class="flex items-center mr-2">
                             <i class="fas fa-money-bill-wave text-green-500 mr-1"></i>
@@ -72,10 +72,10 @@
                 </div>
             </div>
 
-            <div class="flex flex-col mx-3">
+            <div class="flex flex-none flex-col mx-2">
                 
                 {% comment %} Special Icons {% endcomment %}
-                <div class="flex justify-end fa-lg pb-2">
+                <div class="flex justify-end fa-lg">
                         
                     {% comment %} Good Value (NOK/Untappd Star) {% endcomment %}
                     {% comment %} <div class="mx-2">
@@ -97,8 +97,8 @@
                 </div>
 
                 {% comment %} Beer Image {% endcomment %}
-                <div class="place-self-center">
-                    <img class="w-28 h-28 object-scale-down" src="{{ untappd.img_url }}" alt="">
+                <div class="flex-none place-self-center">
+                    <img class="w-20 md:w-28 h-20 md:h-28 object-scale-down" src="{{ beer.get_image_url }}" alt="">
                 </div>
             </div>
         </div>

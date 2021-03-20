@@ -88,14 +88,13 @@
                     </div>
 
                     {% comment %} Image {% endcomment %}
-                    {% comment %} TODO: Legg inn logikk som bestemmer at man bruker Ølmonopolet default dersom Untappd default dukker opp. Man kan evt også benytte sjekke om vinmonopolet har bilde for ølen {% endcomment %}
-                    <div class="place-self-center mx-4">
+                    <div class="flex-none place-self-center mx-4">
                         {% if untappd %}
                             <a href="{{ untappd.url }}" target="_blank">
-                                <img class="w-20 h-20 object-scale-down" src="{{ untappd.img_url }}" alt="">
+                                <img class="w-20 h-20 object-scale-down" src="{{ beer.get_image_url }}" alt="">
                             </a>
                         {% else %}
-                            <img class="w-20 h-20 object-scale-down" src="{% static 'images/MissingBeerImage.png' %}" alt="">
+                            <img class="w-20 h-20 object-scale-down" src="{{ beer.get_image_url }}" alt="">
                         {% endif %}
                     </div>
 

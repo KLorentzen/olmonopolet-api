@@ -6,7 +6,7 @@ class Untappd(models.Model):
     '''
     Details from Untappd
     '''
-    beer_id = models.ForeignKey(Beer, verbose_name='Beers',related_name='untappd',on_delete=models.CASCADE)
+    beer_id = models.OneToOneField(Beer, verbose_name='Beers',related_name='untappd',on_delete=models.CASCADE)
     url = models.URLField(help_text='Full URL to beer on Untappd.com',max_length=250)
     brewery = models.CharField(max_length=250)
     brewery_url = models.URLField(help_text='Full URL to brewery on Untappd.com', max_length=250)
@@ -34,7 +34,7 @@ class UntappdMapping(models.Model):
     '''
     Mapping between beers from Vinmonopolet and Untappd
     '''
-    beer_id = models.ForeignKey(Beer, verbose_name='Beers',related_name='mappings',on_delete=models.CASCADE)
+    beer_id = models.OneToOneField(Beer, verbose_name='Beers',related_name='mappings',on_delete=models.CASCADE)
     untappd_id = models.IntegerField(help_text='Beer ID on Untappd')
     name = models.CharField(help_text='Name on Untappd.com', max_length=250)
     url = models.URLField(help_text='Full URL to beer on Untappd.com',max_length=250, blank=True)
