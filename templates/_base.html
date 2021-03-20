@@ -8,7 +8,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="{% static 'css/base.css' %}">
+    <!-- FontAwesome-->
     <script src="https://kit.fontawesome.com/10bd335677.js" crossorigin="anonymous"></script>
+    <!-- Alpine.JS-->
     <script src="https://cdn.jsdelivr.net/gh/alpinejs/alpine@v2.8.1/dist/alpine.min.js" defer></script>
     <title>{% block title %}Ølmonopolet{% endblock title %}</title>
 </head>
@@ -18,28 +20,33 @@
     <!-- Mobile Navbar-->
     <div class="w-screen sticky z-30 top-0 bg-gray-200 lg:hidden">
         <div x-data="{ open: false }" class="flex flex-col px-4 mx-auto">
-            <div class="flex flex-row items-center justify-between p-4 text-gray-900">
-                <a href="{% url 'home' %}" class="text-lg font-semibold tracking-widest  uppercase rounded-lg focus:outline-none">Ølmonopolet</a>
+            <div class="flex flex-row items-center justify-between p-2 text-gray-900">
+                <div class="flex flex-col">
+                    <a href="{% url 'home' %}" class="text-lg font-semibold tracking-wider uppercase rounded-lg focus:outline-none">Ølmonopolet</a>
+                <div class="-mt-1 text-sm italic font-extralight">
+                    {{store}}
+                </div>
+                </div>
                 <button class="rounded-lg focus:outline-none" @click="open = !open" @click.away="open = false">
-                    <i x-show="!open" class="fas fa-beer text-lg" x-transition:enter="transition ease-out duration-200" x-transition:enter-start="transform opacity-0 scale-75" x-transition:enter-end="transform opacity-100 scale-100"></i>
-                    <i x-show="open" class="fas fa-times text-lg" x-transition:enter="transition ease-out duration-200" x-transition:enter-start="transform opacity-0 scale-75" x-transition:enter-end="transform opacity-100 scale-100"></i>
+                    <i x-show="!open" class="fas fa-beer text-xl" x-transition:enter="transition ease-out duration-200" x-transition:enter-start="transform opacity-0 scale-75" x-transition:enter-end="transform opacity-100 scale-100"></i>
+                    <i x-show="open" class="fas fa-times text-xl" x-transition:enter="transition ease-out duration-200" x-transition:enter-start="transform opacity-0 scale-75" x-transition:enter-end="transform opacity-100 scale-100"></i>
                 </button>
             </div>
-            <nav :class="{'flex': open, 'hidden': !open}" class="flex-col flex-grow hidden pb-4 text-base text-gray-900 font-semibold" x-show="open" x-transition:enter="transition ease-out duration-200" x-transition:enter-start="transform opacity-0 scale-50" x-transition:enter-end="transform opacity-100 scale-100" ">
-                <div class="px-4 py-2 rounded-lg  hover:bg-gray-100">
-                    <i class="w-5 fas fa-boxes"></i>
+            <nav :class="{'flex': open, 'hidden': !open}" class="flex-col flex-grow hidden pb-2 text-lg text-gray-900 font-light" x-show="open" x-transition:enter="transition ease-out duration-200" x-transition:enter-start="transform opacity-0 scale-50" x-transition:enter-end="transform opacity-100 scale-100" ">
+                <div class="px-4 py-1 rounded-lg hover:bg-gray-100">
+                    <i class="w-6 fas fa-boxes"></i>
                     <a class="focus:outline-none px-2" href="{% url 'beer_stock' store_id %}">Varelager</a>
                 </div>
-                <div class="px-4 py-2 rounded-lg  hover:bg-gray-100">
-                    <i class="w-5 far fa-calendar-alt"></i>
+                <div class="px-4 py-1 rounded-lg  hover:bg-gray-100">
+                    <i class="w-6 far fa-calendar-alt"></i>
                     <a class="focus:outline-none px-2" href="{% url 'stock_change' store_id %}">Lagerendringar</a>
                 </div>
-                <div class="px-4 py-2 rounded-lg  hover:bg-gray-100">
-                    <i class="w-5 fas fa-shipping-fast"></i>
+                <div class="px-4 py-1 rounded-lg  hover:bg-gray-100">
+                    <i class="w-6 fas fa-shipping-fast"></i>
                     <a class="focus:outline-none px-2" href="{% url 'release_overview' store_id %}">Ølslepp</a>
                 </div>
-                <div class="px-4 py-2 rounded-lg  hover:bg-gray-100">
-                    <i class="w-5 fas fa-info"></i>
+                <div class="px-4 py-1 rounded-lg  hover:bg-gray-100">
+                    <i class="w-6 fas fa-info"></i>
                     <a class="focus:outline-none px-2" href="{% url 'about' store_id %}">Om</a>
                 </div>
             </nav>
