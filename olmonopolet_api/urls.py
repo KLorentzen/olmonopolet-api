@@ -18,9 +18,10 @@ from django.urls import path, include
 from olmonopolet_api import views
 
 urlpatterns = [
-    path('kjelleren/', admin.site.urls),
-    path('api/v1/',include('api.urls')),
+    path('kjellaren/', admin.site.urls),
+    # path('api/v1/',include('api.urls')),
     path('api-auth/',include('rest_framework.urls')),
+    path('about/<int:store_id>/', views.AboutTemplateView.as_view(), name='about'),
     path('beers/', include('beers.urls')),
     path('stock/', include('stock.urls')),
     path('', include('stores.urls')),

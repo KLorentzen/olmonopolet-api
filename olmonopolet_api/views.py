@@ -1,19 +1,14 @@
 from django.shortcuts import render
+from django.template.loader import render_to_string
 from stock.models import BeerStock
 from stores.models import Store
+from beers.models import Beer
+from django.views.generic import TemplateView
 
+class AboutTemplateView(TemplateView):
+    template_name = "about.html"
 
-def frontend(request):
-    '''
-    Entrypoint for Vue JS Application
-    '''
-
-    stock_info = BeerStock.objects.all()
-    stores = Store.objects.all()
-
-    context_data = {
-        'beer_stock': stock_info,
-        'stores': stores
-    }
-
-    return render(request,'frontend/index.html', context_data)
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['store'] = Store.objects.get(store_id=self.kwargs['store_id'])
+        return context
