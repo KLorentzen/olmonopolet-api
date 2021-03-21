@@ -6,7 +6,7 @@
 {% comment %} Iterate across all days when there has been restock event {% endcomment %}
 {% for stock_change in stock_change_list %}
     
-    <div class="w-full xl:w-3/5 text-left mt-4 mb-2">
+    <div class="w-full lg:w-3/5 text-left mt-4 mb-2">
         {% comment %} Date of Restock {% endcomment %}
         <div class="font-semibold text-2xl">
             {{ stock_change.grouper|date:"l j. F"|capfirst }}
@@ -18,7 +18,7 @@
     </div>
     
     {% comment %} Stock_change Section {% endcomment %}
-    <div class="flex flex-col w-full xl:w-3/5 border shadow border-gray-700 rounded-md divide-y divide-solid divide-gray-700 overflow-hidden">
+    <div class="flex flex-col w-full lg:w-3/5 border shadow border-gray-700 rounded-md divide-y divide-solid divide-gray-700 overflow-hidden">
 
         {% comment %} Beers Restocked {% endcomment %}
         {% for beer in stock_change.list %}
