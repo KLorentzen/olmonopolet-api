@@ -5,17 +5,21 @@
 
 <!-- Header Info -->
 
-<div class="flex sticky top-14 py-7 bg-white ">
-        Her kommer en kul seksjon med masse informasjon!
+<div class="flex sticky top-14 lg:top-0 py-4 bg-white ">
+    <div class="w-full mx-4 text-center h-auto border-b border-gray-500">
 
         {% comment %} Search Beers {% endcomment %}
-        <div class="flex justify-center my-5 h-10 ">
-            <div class="group w-1/3 flex justify-center items-center text-gray-400 focus-within:text-yellow-500 ">
+        <div class="flex justify-center my-2 h-10 ">
+            <div class="group flex w-4/5 md:w-3/5 lg:w-1/3 justify-center items-center text-gray-400 rounded-lg border border-gray-400 focus-within:text-yellow-400 focus-within:border-yellow-400">
                 <input
-                    class="flex-grow rounded-lg  p-2 border-gray-400 border focus:outline-none focus:border-yellow-500 focus:text-gray-600"
-                    type="text" name="query" placeholder="Søk gjennom lageret hos {{store.name}}..."
-                    hx-trigger="keyup changed delay:500ms" hx-target="#beer_stock" hx-post="{% url 'beer_stock_search' store.store_id %}" hx-indicator=".htmx-indicator">
-                <i class="fas fa-beer fa-2x -mx-10  "></i>
+                    class="w-full focus:outline-none mx-2 focus:text-gray-700"
+                    type="text" name="query" placeholder="Finn øl og bryggeri"
+                    hx-trigger="keyup changed delay:500ms" hx-target="#beer_stock" hx-post="{% url 'beer_stock_search' store.store_id %}" hx-indicator=".htmx-search-indicator">
+                
+                {% comment %} Search spinner {% endcomment %}
+                <div class="w-6 mx-2">
+                    <img class="htmx-search-indicator htmx-indicator mx-auto" src="{% static 'svg/spinners/bars.svg' %}" />
+                </div>
             </div>
         </div>
     </div>
@@ -25,7 +29,7 @@
 <div id='content'>
     
     {% comment %} Beer Cards {% endcomment %}
-    <div id="beer_stock" class="grid grid-cols-1 lg:grid-cols-2 gap-4 mx-1">
+    <div id="beer_stock" class="grid grid-cols-1 lg:grid-cols-2 gap-4 mx-4">
 
         {% comment %} Inject all Beers in Stock - Infinite Scroll {% endcomment %}
         <div class="" hx-get="{% url 'store_beers' store.store_id %}" hx-trigger="revealed" hx-swap="outerHTML" hx-indicator=".htmx-indicator"></div>
@@ -33,7 +37,7 @@
     </div>
     
     {% comment %} Loading spinner {% endcomment %}
-    <div class="py-10">
+    <div class="py-10 w-20 mx-auto">
         <img class="htmx-indicator mx-auto" src="{% static 'svg/spinners/bars.svg' %}" />
     </div>
 </div>
