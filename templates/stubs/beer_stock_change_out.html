@@ -6,7 +6,7 @@
 {% comment %} Iterate across all days when beers went out of stock {% endcomment %}
 {% for stock_change in stock_change_list %}
 
-    <div class="w-full xl:w-3/5 text-left mt-4 mb-2">
+    <div class="w-full lg:w-3/5 text-left mt-4 mb-2">
         {% comment %} Date Beer went out of Stock {% endcomment %}
         <div class="font-semibold text-2xl">
             {{ stock_change.grouper|date:"l j. F"|capfirst }}
