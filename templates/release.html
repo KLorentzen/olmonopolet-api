@@ -22,7 +22,7 @@
     <div class="" hx-get="{% url 'beer_release' %}" hx-trigger="revealed" hx-swap="outerHTML" hx-indicator=".htmx-indicator"></div>
 
     {% comment %} Loading spinner {% endcomment %}
-    <div class="py-10 w-20">
+    <div class="py-10 w-20 mx-auto">
         <img class="htmx-indicator mx-auto" src="{% static 'svg/spinners/bars.svg' %}" />
     </div>    
 </div>
