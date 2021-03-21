@@ -7,10 +7,11 @@
     
     <!-- Header Info -->
     <div class="flex justify-center sticky top-14 lg:top-0 p-4 bg-white ">
+        <div class="w-full xl:w-3/5 text-center h-auto border-b border-gray-500">
             <div class="font-light text-5xl italic">
                 Lagerendringar
             </div>
-            <div class="mx-auto w-3/5 p-2">
+            <div class="mx-auto w-full lg:w-3/5 p-2">
                 Få kontroll over kva øl som har kome inn på lager og kva øl som har vore utseld ved Vinmonopolet <span class="italic font-semibold">{{ store }}</span>.
             </div>
 
@@ -55,7 +56,7 @@
         </div>
         
         {% comment %} Loading spinner {% endcomment %}
-        <div class="py-10">
+        <div class="py-10 w-20 mx-auto">
             <img class="htmx-indicator mx-auto" src="{% static 'svg/spinners/bars.svg' %}" />
         </div>
 

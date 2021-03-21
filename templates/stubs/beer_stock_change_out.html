@@ -6,7 +6,7 @@
 {% comment %} Iterate across all days when beers went out of stock {% endcomment %}
 {% for stock_change in stock_change_list %}
 
-    <div class="w-full lg:w-3/5 text-left mt-4 mb-2">
+    <div class="w-full xl:w-3/5 text-left mt-4 mb-2">
         {% comment %} Date Beer went out of Stock {% endcomment %}
         <div class="font-semibold text-2xl">
             {{ stock_change.grouper|date:"l j. F"|capfirst }}
@@ -22,10 +22,10 @@
         
         {% comment %} Beers Out of Stock {% endcomment %}
         {% for beer in stock_change.list %}
-        {% with beer.beer_id.untappd.all|first as untappd %}
+        {% with beer.beer_id.untappd as untappd %}
 
         {% comment %} Beer Details{% endcomment %}
-        <div class="flex justify-between py-1">
+        <div class="flex justify-between py-2">
             <div class="flex flex-col mx-2 text-sm font-light">
                 
                 <a href="{{ beer.beer_id.url }}" target="_blank">
