@@ -1,0 +1,37 @@
+
+{% if stores %}
+
+    {% for store in stores %}
+        <a href="{% url 'beer_stock' store.store_id %}">
+            <div class="flex justify-between items-center text-sm hover:bg-yellow-100">
+                <div class="mx-2 py-1">
+                    <div class="font-bold">{{ store.name }}</div>
+                    <div class="text-xs">{{ store.street_address}}</div>
+                    <div class="text-xs">{{ store.postalcode}} {{ store.city }}</div>
+                </div>
+                <div class="mx-2 py-1 rounded-full text-xs italic overflow-hidden">
+                    {% if store.category == 6 %}
+                        <span class="p-2 text-white bg-gray-900">Kategori: {{ store.category }}</span>
+                    {% elif store.category == 5 %}
+                        <span class="p-2 text-white bg-gray-800">Kategori: {{ store.category }}</span>
+                    {% elif store.category == 4 %}
+                        <span class="p-2 text-white bg-gray-700">Kategori: {{ store.category }}</span>
+                    {% elif store.category == 3 %}
+                        <span class="p-2 text-white bg-gray-600">Kategori: {{ store.category }}</span>
+                    {% elif store.category == 2 %}
+                        <span class="p-2 text-white bg-gray-500">Kategori: {{ store.category }}</span>
+                    {% else %}
+                        <span class="p-2 text-white bg-gray-400">Kategori: {{ store.category }}</span>
+                    {% endif %}
+                </div>
+            </div>
+        </a>
+    {% endfor %}
+{% elif query != "" %}
+    <!-- Show message if no stores match query-->
+    <div class="flex justify-between items-center text-sm hover:bg-blue-50">
+        <div class="mx-2 py-1">
+            <div class="italic">No stores found for: "{{ query }}"</div>
+        </div>
+    </div>
+{% endif %}

@@ -1,6 +1,7 @@
 from django.urls import path, include
-from .views import StoreList
+from .views import StoreView, store_search
 
 urlpatterns = [
-    path('',StoreList.as_view()),
+    path('', StoreView.as_view(), name='home'),
+    path('search/', store_search, name='store_search'),
 ]

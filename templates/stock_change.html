@@ -1,0 +1,67 @@
+{% extends '_base.html' %}
+{% load static %}
+{% load i18n %}
+
+
+{% block content %}
+    
+    <!-- Header Info -->
+    <div class="flex justify-center sticky top-14 lg:top-0 p-4 bg-white ">
+        <div class="w-full lg:w-3/5 text-center h-auto border-b border-gray-500">
+            <div class="font-light text-5xl italic">
+                Lagerendringar
+            </div>
+            <div class="mx-auto w-full lg:w-3/5 p-2">
+                Få kontroll over kva øl som har kome inn på lager og kva øl som har vore utseld ved Vinmonopolet <span class="italic font-semibold">{{ store }}</span>.
+            </div>
+
+            {% comment %} Buttons to select restock/out of stock {% endcomment %}
+            <div x-data="{ stock_in: true, stock_out: false }" class="flex justify-center">
+                <div class="" >
+                    <button class="focus:outline-none border border-transparent hover:border-gray-900 m-2 py-1 px-2 rounded-md transform ease-in-out duration-200 hover:scale-110"
+                        :class="{ 'bg-green-300': stock_in, 'bg-gray-200': !stock_in }"
+                        @click="stock_in=true;stock_out=false;scrollTo(0,0);"
+                        hx-trigger="click" hx-target="#beer_stock_change" hx-post="{% url 'stock_change_in' store.store_id %}" hx-indicator=".htmx-indicator">
+                        <i class="fas fa-plus fa-sm mx-1 "></i>
+                        <span class="text-sm font-semibold">Nytt på lager</span>
+                    </button>
+                </div>
+                <div class="">
+                    <button class="focus:outline-none border border-transparent hover:border-gray-900 m-2 py-1 px-2 rounded-md bg-gray-300 transform ease-in-out duration-200 hover:scale-110"
+                        :class="{ 'bg-red-300': stock_out, 'bg-gray-200': !stock_out }"
+                        @click="stock_in=false;stock_out=true;scrollTo(0,0);"
+                        hx-trigger="click" hx-target="#beer_stock_change" hx-post="{% url 'stock_change_out' store.store_id %}" hx-indicator=".htmx-indicator">
+                        <i class="fas fa-minus fa-sm mx-1"></i>
+                        <span class="text-sm font-semibold">Utseld</span>
+                    </button>
+                </div>
+            </div>
+            {% comment %} Time When Stock was last updated {% endcomment %}
+            <div class="flex justify-center text-xs">
+                Sist oppdatert: {{ last_updated|date:"j. F H:i" }}
+            </div>
+        </div>
+    </div>
+    
+    
+    <!-- Main Content -->
+    <div id='content'>
+
+        {% comment %} Stock Change List {% endcomment %}
+        <div id="beer_stock_change" class="flex flex-col items-center mx-4 ">
+
+            {% comment %} Inject all Beers Part of Stock Change (In/Out) - Infinite Scroll {% endcomment %}
+             <div class="" hx-get="{% url 'stock_change_in' store.store_id %}" hx-trigger="revealed" hx-swap="outerHTML" hx-indicator=".htmx-indicator"></div>
+
+        </div>
+        
+        {% comment %} Loading spinner {% endcomment %}
+        <div class="py-10 w-20 mx-auto">
+            <img class="htmx-indicator mx-auto" src="{% static 'svg/spinners/bars.svg' %}" />
+        </div>
+
+    </div>
+
+    
+    
+{% endblock content %}

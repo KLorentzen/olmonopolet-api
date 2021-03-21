@@ -26,7 +26,6 @@ def get_beer_details(url):
         # TODO: Få inn description korrekt. Per nå er det problematisk å få kun tekst siden det også er en <a> tag i div.
         untappd_details["description"] = untappd_html.find("div", class_="content").find("div",class_="bottom").find("div",class_="desc").find("div",class_="beer-descrption-read-less").contents
 
-        # TODO: Handle img_url which is placeholder for missing img at Untappd
         untappd_details["img_url"] = untappd_html.find("div",class_="content").find('a',class_ = 'label').find('img')['src'] 
 
         untappd_details["rating"] = untappd_html.find("div", class_="content").find("div",class_="details").find("div",class_="caps")['data-rating']

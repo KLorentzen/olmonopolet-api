@@ -1,0 +1,113 @@
+{% load static %}
+
+{% if beers %}
+
+    {% regroup beers by launch_date as launch_date_list %}
+
+    {% comment %} Iterate across all days when beers will be launched {% endcomment %}
+    {% for launch_dates in launch_date_list %}
+
+        <div class="w-full text-left mt-4">
+            {% comment %} Date Beer will be launched {% endcomment %}
+            <div class="font-semibold text-2xl">
+                {{ launch_dates.grouper|date:"l j. F"|capfirst }}
+                <span class="text-xs">{{ launch_dates.grouper|date:"(Y)" }}</span>
+            </div>
+            {% comment Antall øl som slippes %}  {% endcomment %}
+            <div class="text-base italic -mt-1">
+                <span class="font-semibold">{{ launch_dates.list|length }}</span><span> øl planlagt for slepp</span>
+            </div>
+        </div>
+        
+        {% comment %} Group By Selection (Basisutvalg/Bestillingsutvalg/Spesialutvalg/Tilleggsutvalg) {% endcomment %}
+        {% regroup launch_dates.list by selection as beer_launch_list %}
+
+        {% comment %} One section per 'Selection' {% endcomment %}
+        {% for selections in beer_launch_list %}
+
+            <div class="w-full mt-3 mb-1 font-medium text-left text-lg italic">
+                {{ selections.grouper|capfirst }}
+            </div>
+
+            <div class="flex flex-col w-full border shadow border-gray-700 rounded-md divide-y divide-solid divide-gray-700 overflow-hidden">
+                
+                {% comment %} Beers to be launched per 'Selection' {% endcomment %}
+                {% for beer in selections.list %}
+                {% with beer.untappd.all|first as untappd %}
+
+                {% comment %} Beer Details{% endcomment %}
+                <div class="flex justify-between py-1">
+                    <div class="flex flex-col mx-2 text-sm font-light">
+                        
+                        {% comment %} Beer Name {% endcomment %}
+                        <a href="{{ beer.url }}" target="_blank">
+                            <div class="font-medium">
+                                {{beer}}
+                            </div>
+                        </a>
+
+                        <div class="">
+                            {{beer.brewery}}
+                        </div>
+                        <div>{% if untappd.style %} {{ untappd.style }} {% else %} {{ beer.style }} {% endif %}</div>
+                        
+                        {% comment %} Additional Beer Details {% endcomment %}
+                        <div class="flex">
+                            <div class="flex items-center mr-2">
+                                <i class="fas fa-money-bill-wave text-green-500 mr-1"></i>
+                                <div class=""> {{ beer.price }}kr </div>
+                            </div>
+
+                            {% comment %} Beer Alcohol Volume {% endcomment %}
+                            <div class="flex items-center mr-2">
+                                <i class="fas fa-percent fa-xs mr-1"></i>
+                                <div class="">{{ beer.alc_volume }}</div>
+                            </div>
+
+                            {% comment %} Beer Volume {% endcomment %}
+                            <div class="flex items-center mr-2">
+                                <i class="fas fa-glass-whiskey text-gray-700 mr-1"></i>
+                                <div class="">{{ beer.volume }}L</div>
+                            </div>
+
+                            {% if untappd %}
+                                {% comment %} Untappd Rating {% endcomment %}
+                                <a href="{{ untappd.url }}" target="_blank">
+                                    <div class="flex items-center mr-2">
+                                        <i class="fab fa-untappd text-yellow-400 mr-1"></i>
+                                        <div class=""> {{ untappd.rating|floatformat:3 }} </div>
+                                    </div>
+                                </a>
+                                {% comment %} Untappd Unique Check-ins {% endcomment %}
+                                <div class="flex items-center mr-2">
+                                    <i class="fas fa-users mr-1"></i>
+                                    <div class=""> {{ untappd.check_in_unique }} </div>
+                                </div>
+                            {% endif %}
+                        </div>
+                    </div>
+
+                    {% comment %} Image {% endcomment %}
+                    <div class="flex-none place-self-center mx-4">
+                        {% if untappd %}
+                            <a href="{{ untappd.url }}" target="_blank">
+                                <img class="w-20 h-20 object-scale-down" src="{{ beer.get_image_url }}" alt="">
+                            </a>
+                        {% else %}
+                            <img class="w-20 h-20 object-scale-down" src="{{ beer.get_image_url }}" alt="">
+                        {% endif %}
+                    </div>
+
+                </div>
+                {% endwith %}
+                {% endfor %}
+            </div>
+        {% endfor %}
+    {% endfor %}
+
+{% else %}
+    <div class="text-xl italic font-light">
+        Fant ingen øl på noverande tidspunkt.
+    </div>
+
+{% endif %}

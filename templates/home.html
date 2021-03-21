@@ -1,0 +1,76 @@
+{% comment %} Base HTML file to be extended {% endcomment %}
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="{% static 'css/base.css' %}">
+    <script src="https://kit.fontawesome.com/10bd335677.js" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/gh/alpinejs/alpine@v2.8.1/dist/alpine.min.js" defer></script>
+    <title>{% block title %}Ølmonopolet{% endblock title %}</title>
+</head>
+
+<body>
+    <div class="container mx-auto">
+
+        {% comment %} Logo {% endcomment %}
+        <div class="flex justify-center mt-20">
+            <div class='bg-gray-400 w-3/4 lg:w-1/5 h-40'>
+                ØLMONOPOLET LOGO
+            </div>
+        </div>
+
+        {% comment %} Jumbotron {% endcomment %}
+        <div class="flex flex-col justify-center p-2">
+            <div class="flex justify-center my-8">
+                <div class="flex flex-col">
+                    <div>
+                        <h1 class="uppercase tracking-wider font-semibold text-center text-3xl md:text-5xl">Ølmonopolet</h1>
+                    </div>
+                    <div class='mt-2 text-center'>
+                        Nå kan du få full oversikt over varelageret ved ditt lokale Vinmonopol!
+                    </div>
+                    <div class=' text-center'>
+                        Velg butikk under for å komme i gang.
+                    </div>
+                </div>
+            </div>
+
+            {% comment %} Store Search Bar {% endcomment %}
+            <div class="flex justify-center h-10">
+                <div class="flex justify-center items-center mx-4 w-full md:max-w-md rounded-lg border border-gray-400 focus-within:border-yellow-400  text-gray-400">
+                    <input
+                        class="flex-grow  m-2 outline-none focus:text-gray-700"
+                        type="text" name="query" placeholder="Søk etter Vinmonopol..."
+                        hx-trigger="keyup changed delay:500ms" hx-target="#store_search" hx-post="{% url 'store_search' %}" hx-indicator=".htmx-indicator">
+                    <img class="htmx-indicator h-7 mr-2" src="{% static 'svg/spinners/bars.svg' %}" />
+                </div>
+            </div>
+
+            {% comment %} VMP Store Search Results {% endcomment %}
+            <div class="flex justify-center mx-4">
+                <div id="store_search" class="flex flex-col w-full md:max-w-md border rounded-lg divide-y divide-solid overflow-hidden">
+                <!-- Search results will be injected here -->
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+
+
+{% comment %} htmx {% endcomment %}
+<script src="https://unpkg.com/htmx.org@1.2.0"></script>
+<script>
+      document.body.addEventListener('htmx:configRequest', (event) => {
+        event.detail.headers['X-CSRFToken'] = '{{ csrf_token }}';
+      })
+</script>
+
+<script src="{% static 'js/base.js' %}"></script>
+{% comment %} Block to include page specific Javascript {% endcomment %}
+{% block javascript %}{% endblock javascript %}
+
+</html>

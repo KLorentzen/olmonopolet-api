@@ -24,17 +24,15 @@ class Command(BaseCommand):
             else:
                 
                 try:
-                    # TODO: Add all stores when testing is completed
-                    # Use Molde (storeId=244) for testing
-                    # Use Egersund (storeID=209) for testing
-                    if int(store["storeId"]) in (209,244,245):
                         new_obj = Store.objects.create(
                             store_id = store["storeId"],
                             name = store["storeName"],
                             category = store["category"],
                             city = store["address"]["city"],
                             street_address = store["address"]["street"],
-                            postalcode = store["address"]["postalCode"]
+                            postalcode = store["address"]["postalCode"],
+                            latitude = store["address"]["gpsCoord"].split(';')[0],
+                            longitude = store["address"]["gpsCoord"].split(';')[1],
                         )
 
                         new_stores += 1

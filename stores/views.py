@@ -2,8 +2,28 @@ from django.shortcuts import render
 from .serializers import StoreSerializer
 from .models import Store
 from rest_framework import generics
+from django.views.generic import TemplateView
 
-# Create your views here.
-class StoreList(generics.ListAPIView):
+
+# View Functions
+def store_search(request):
+    '''
+    Used by search bar in landing page (home)
+    '''
+    # Returns no stores if query string is empty ('')
+    stores = None
+
+    # Check that store query is not empty
+    if request.POST["query"] != '':
+        # Fetch all stores that math the query string
+        stores = Store.objects.filter(active=True).filter(name__icontains=request.POST["query"])
+    return render(request, 'stubs/store_search.html', {'stores': stores, 'query':request.POST["query"]})
+
+# Regular Views
+class StoreView(TemplateView):
+    template_name='home.html'
+
+# API Views
+class StoreListAPIView(generics.ListAPIView):
     queryset=Store.objects.all()
     serializer_class=StoreSerializer

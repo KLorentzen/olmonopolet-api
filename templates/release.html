@@ -1,0 +1,29 @@
+{% extends '_base.html' %}
+{% load static %}
+
+{% block content %}
+
+<!-- Header Info -->
+<div class="flex justify-center sticky top-5 lg:top-0 py-4 mx-4 bg-white ">
+    <div class="w-full lg:w-3/5 text-center h-auto border-b border-gray-500">
+        <div class="font-light text-5xl italic">
+            Ølslepp
+        </div>
+        <div class="mx-auto w-full lg:w-3/5 p-2">
+            Følgjande øl er planlagt for slepp på Vinmonopolet.
+        </div>
+    </div>
+</div>
+
+<!-- Main Content -->
+<div class="flex flex-col w-full lg:w-3/5 mx-auto px-4" id='content'>
+    
+    {% comment %} Inject all Beers to be Released {% endcomment %}
+    <div class="" hx-get="{% url 'beer_release' %}" hx-trigger="revealed" hx-swap="outerHTML" hx-indicator=".htmx-indicator"></div>
+
+    {% comment %} Loading spinner {% endcomment %}
+    <div class="py-10 w-20 mx-auto">
+        <img class="htmx-indicator mx-auto" src="{% static 'svg/spinners/bars.svg' %}" />
+    </div>    
+</div>
+{% endblock content %}

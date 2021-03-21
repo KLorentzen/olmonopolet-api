@@ -1,0 +1,135 @@
+
+{% comment %} Beer cards {% endcomment %}
+{% for beer in beers %}
+{% with beer.untappd as untappd %}
+{% with beer.beerstock.all|first as stock %}
+    <div class="rounded-md border shadow border-gray-700">
+
+        <div class="flex justify-between my-2">
+
+            {% comment %} Beer name and details {% endcomment %}
+            <div class="flex flex-col mx-2 text-sm font-light">
+                <div class="text-base font-bold">
+                    <a href="{{ beer.url }}" target="_blank">{{beer.name}}</a>
+                </div>
+                <div>{{ beer.brewery }}</div>
+
+                <div>{% if untappd.style %} {{ untappd.style }} {% else %} {{ beer.style }} {% endif %}</div>
+
+                {% comment %} Beer Detail Section {% endcomment %}
+                <div class="flex flex-col border-t border-0 border-gray-500 my-1 pt-1">
+                    
+                    {% comment %} Beer Selection {% endcomment %}
+                    <div class="italic">{{ beer.selection }}</div>
+
+                    {% comment %} Vinmonopolet Detail Section {% endcomment %}
+                    <div class="flex flex-wrap">
+                        {% comment %} Beer Price {% endcomment %}
+                        <div class="flex items-center mr-2">
+                            <i class="fas fa-money-bill-wave text-green-500 mr-1"></i>
+                            <div class=""> {{ beer.price }}kr </div>
+                        </div>
+
+                        {% comment %} Beer Alcohol Volume {% endcomment %}
+                        <div class="flex items-center mr-2">
+                            <i class="fas fa-percent fa-xs mr-1"></i>
+                            <div class="">{{ beer.alc_volume }}</div>
+                        </div>
+
+                        {% comment %} Beer Volume {% endcomment %}
+                        <div class="flex items-center mr-2">
+                            <i class="fas fa-glass-whiskey text-gray-700 mr-1"></i>
+                            <div class="">{{ beer.volume }}L</div>
+                        </div>
+
+                        {% comment %} Stock {% endcomment %}
+                        <div class="flex items-center mr-2">
+                            <i class="fas fa-box text-yellow-900 mr-1"></i>
+                            <div class=""> {{ stock.product_stock }} </div>
+                        </div>
+                    </div>
+
+                    {% comment %} Untappd Detail Section {% endcomment %}
+                    {% if untappd %}
+                        <div class="flex">
+
+                            {% comment %} Untappd Rating {% endcomment %}
+                            <a href="{{ untappd.url }}" target="_blank">
+                                <div class="flex items-center mr-2">
+                                    <i class="fab fa-untappd text-yellow-400 mr-1"></i>
+                                    <div class=""> {{ untappd.rating|floatformat:3 }} </div>
+                                </div>
+                            </a>
+
+                            {% comment %} Untappd Unique Check-ins {% endcomment %}
+                            <div class="flex items-center mr-2">
+                                <i class="fas fa-users mr-1"></i>
+                                <div class=""> {{ untappd.check_in_unique }} </div>
+                            </div>
+                        </div>
+                    {% endif %}
+
+                </div>
+            </div>
+
+            <div class="flex flex-none justify-between flex-col mx-2">
+                
+                {% comment %} Special Icons {% endcomment %}
+                <div class="flex justify-between fa-lg">
+                        
+                    {% comment %} Good Value (NOK/Untappd Star) {% endcomment %}
+                    {% comment %} <div class="mx-2">
+                        <i class="fas fa-tags"></i>
+                    </div> {% endcomment %}
+                    
+                    {% comment %} Hot Beer / High Sales {% endcomment %}
+                    {% comment %} <div class="mx-2">
+                        <i class="fas fa-fire text-red-600"></i>
+                    </div> {% endcomment %}
+
+                    {% comment %} New Beer {% endcomment %}
+                    {% comment %} {% if stock.is_new %}
+                        <div class="mx-2">
+                            <i class="fas fa-dolly"></i>
+                        </div>
+                    {% endif %} {% endcomment %}
+
+                </div>
+
+                {% comment %} Beer Image {% endcomment %}
+                <div class="flex-none place-self-center">
+                    {% if untappd %}
+                        <a href="{{ untappd.url }}" target="_blank">
+                            <img class="w-20 md:w-28 h-20 md:h-28 object-scale-down" src="{{ beer.get_image_url }}" alt="">
+                        </a>
+                    {% else %}
+                        <img class="w-20 md:w-28 h-20 md:h-28 object-scale-down" src="{{ beer.get_image_url }}" alt="">
+                    {% endif %}
+                </div>
+
+                {% comment %} Last Updated Stock{% endcomment %}
+                <div class="text-xs font-light text-center text-gray-700 my-1">
+                    <i class="fas fa-sync "></i>
+                    <span>{{ stock.last_updated|date:"d.m.y H:i" }}</span>
+                </div>
+            </div>
+        </div>
+
+    </div>
+{% endwith %}
+{% endwith %}
+{% endfor %}
+
+{% if beers.has_next%}
+    {% comment %} Only paginate if Full stock is listed {% endcomment %}
+    {% if full_store_stock %}
+        <div class="" hx-get="{% url 'store_beers' store_id %}?page={{ beers.next_page_number }}" hx-trigger="revealed" hx-swap="outerHTML" hx-indicator=".htmx-indicator"></div>
+    {% endif %}
+{% endif %}
+
+{% if search %}
+    <script>
+        // Scroll to top when a search is performed
+        scrollTo(0,0);
+    </script>
+{% endif %}

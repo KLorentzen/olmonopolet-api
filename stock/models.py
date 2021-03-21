@@ -1,6 +1,7 @@
 from django.db import models
 from beers.models import Beer
 from stores.models import Store
+from datetime import date
 
 # Create your models here.
 class BeerStock(models.Model):
@@ -14,17 +15,28 @@ class BeerStock(models.Model):
     
     restock_qty = models.BigIntegerField(help_text='Quantity of new products from last re-stock')
     restock_date = models.DateField(help_text='Date when product was last re-stocked',auto_now=False, auto_now_add=False)
+    complete_restock_date = models.DateField(help_text='Date when product was completely restocked (stock=0 before re-stock)', auto_now=False, auto_now_add=True)
     out_of_stock_date = models.DateField(help_text='Date when product was sold out (null if in stock)', auto_now=False, auto_now_add=False, blank=True, null=True)
     last_updated = models.DateTimeField(auto_now=True)
     created = models.DateField(auto_now_add=True)
 
     class Meta:
         verbose_name_plural = 'Beer Stock'
-        ordering = ["-restock_date", "-out_of_stock_date"]
+        ordering = ["-restock_date"]
 
     def __str__(self):
         # Return the name of the beer_id based on relationship
         return self.beer_id.name
+    
+    def is_new(self):
+        '''
+        Tags beer as "new" if it was restocked within the last 7 days
+        '''
+        _delta = date.today() - self.complete_restock_date 
+        if _delta.days > 7:
+            return False
+        else:
+            return True
 
 class WatchList(models.Model):
     '''
