@@ -33,7 +33,7 @@
                 
                 {% comment %} Beers to be launched per 'Selection' {% endcomment %}
                 {% for beer in selections.list %}
-                {% with beer.untappd.all|first as untappd %}
+                {% with beer.untappd as untappd %}
 
                 {% comment %} Beer Details{% endcomment %}
                 <div class="flex justify-between py-1">
