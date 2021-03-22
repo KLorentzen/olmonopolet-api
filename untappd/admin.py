@@ -8,7 +8,7 @@ class UntappdAdmin(admin.ModelAdmin):
                     'brewery',
                     'style',
                     'rating',
-                    'check_in_unique',
+                    'num_ratings',
                     'last_updated')   
     search_fields = ('beer_id__name', )
 

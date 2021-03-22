@@ -1,5 +1,6 @@
 from django.shortcuts import render
 from django.core.paginator import Paginator
+from django.db.models import Max
 from rest_framework import generics
 from .models import BeerStock
 from beers.models import Beer
@@ -45,6 +46,7 @@ class StockChangeTemplateView(TemplateView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['store'] = Store.objects.get(store_id=self.kwargs['store_id'])
+        context['last_updated'] = BeerStock.objects.filter(store_id=self.kwargs['store_id']).aggregate(Max('last_updated'))['last_updated__max']
         return context
 
 # API Views

@@ -66,10 +66,10 @@
                                 <div class=""> {{ untappd.rating|floatformat:3 }} </div>
                             </div>
                         </a>
-                        {% comment %} Untappd Unique Check-ins {% endcomment %}
+                        {% comment %} Untappd Number of Ratings {% endcomment %}
                         <div class="flex items-center mr-2">
                             <i class="fas fa-users mr-1"></i>
-                            <div class=""> {{ untappd.check_in_unique }} </div>
+                            <div class=""> {{ untappd.num_ratings }} </div>
                         </div>
                     {% endif %}
                 </div>
