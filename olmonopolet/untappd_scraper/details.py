@@ -34,12 +34,16 @@ def get_beer_details(url):
         untappd_details["check_in_total"] = untappd_html.find("div",class_="content").find("div",class_="stats").find("span",class_="count").string
         untappd_details["check_in_unique"] = untappd_html.find("div",class_="content").find("div",class_="stats").find_all("span",class_="count")[1].string
 
-        # TODO: Add validations and try/excepts
+        # TODO: Add further validations and try/excepts
 
-        # Stripping thousand separator ',' from numbers
-        untappd_details["num_regs"] = untappd_details["num_regs"].replace(',','')
-        untappd_details["check_in_total"] = untappd_details["check_in_total"].replace(',','')
-        untappd_details["check_in_unique"] = untappd_details["check_in_unique"].replace(',','')
+        for arg in ['num_regs', 'check_in_total', 'check_in_unique']:
+            try:
+                # Stripping thousand separator ',' from numbers
+                untappd_details[arg] = int(untappd_details[arg].replace(',',''))
+            except ValueError:
+                untappd_details[arg] = 0
+                print(f"Error, {arg} is not an integer.")
+
     except Exception as err:
         print(f"Exception cought while updating untappd data: {err}")
 
