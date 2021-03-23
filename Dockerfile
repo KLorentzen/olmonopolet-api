@@ -6,6 +6,7 @@ ENV PYTHONUNBUFFERED 1
 
 RUN apt update && apt upgrade -y
 RUN apt install -y libpq-dev gcc
+RUN apt install -y gettext
 
 RUN pip install --upgrade pip
 #RUN pip install --upgrade pipenv

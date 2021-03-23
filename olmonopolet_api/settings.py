@@ -125,6 +125,9 @@ AUTH_PASSWORD_VALIDATORS = [
 # Internationalization
 # https://docs.djangoproject.com/en/3.0/topics/i18n/
 
+# Translation
+LOCALE_PATHS = [os.path.join(BASE_DIR, 'locale')]
+
 # Norsk Nynorsk
 LANGUAGE_CODE = 'nn'
 

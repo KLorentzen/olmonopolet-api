@@ -1,4 +1,5 @@
 {% load static %}
+{% load i18n %}
 
 {% if beers %}
 
@@ -26,7 +27,9 @@
         {% for selections in beer_launch_list %}
 
             <div class="w-full mt-3 mb-1 font-medium text-left text-lg italic">
-                {{ selections.grouper|capfirst }}
+                {% with selections.grouper as beer_selection %}
+                    {% translate beer_selection %}
+                {% endwith %}
             </div>
 
             <div class="flex flex-col w-full border shadow border-gray-700 rounded-md divide-y divide-solid divide-gray-700 overflow-hidden">
@@ -52,7 +55,7 @@
                         <div>{% if untappd.style %} {{ untappd.style }} {% else %} {{ beer.style }} {% endif %}</div>
                         
                         {% comment %} Additional Beer Details {% endcomment %}
-                        <div class="flex">
+                        <div class="flex flex-wrap ">
                             <div class="flex items-center mr-2">
                                 <i class="fas fa-money-bill-wave text-green-500 mr-1"></i>
                                 <div class=""> {{ beer.price }}kr </div>
