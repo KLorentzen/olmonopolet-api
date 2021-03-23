@@ -111,6 +111,7 @@ class Command(BaseCommand):
                     # Implies that beer has never been in stock before and should be 0
                     current_stock = 0
                     last_available_stock = None
+                    restock_date = date.today()
                     
                 obj, created = BeerStock.objects.update_or_create(
                     beer_id = beer,
@@ -120,7 +121,8 @@ class Command(BaseCommand):
                     'last_product_stock' : None, 
                     'restock_qty' : restock.get_restock_qty(current_stock, store_stock["stockInfo"]["stockLevel"],last_available_stock) if restock.is_restocked(current_stock, store_stock["stockInfo"]["stockLevel"], last_available_stock) else existing_stock.restock_qty,
                     'restock_date' : date.today() if restock.is_restocked(current_stock, store_stock["stockInfo"]["stockLevel"], last_available_stock) else existing_stock.restock_date,
-                    'out_of_stock_date' : None
+                    'out_of_stock_date' : None,
+                    'complete_restock_date' : existing_stock.complete_restock_date if existing_stock else restock_date
                     }
                 )
                 
