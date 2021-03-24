@@ -1,6 +1,6 @@
 from django.core.management.base import BaseCommand
 from django.db.utils import IntegrityError
-from django.db.models import Q
+from django.db.models import Q, F
 from olmonopolet.untappd_scraper import details
 from untappd.models import Untappd, UntappdMapping
 from datetime import datetime
@@ -21,7 +21,7 @@ class Command(BaseCommand):
 
     def handle(self, *args, **options):
         # Get verified Beer Mappings
-        mappings = UntappdMapping.objects.filter(Q(auto_match=True) | Q(verified=True))
+        mappings = UntappdMapping.objects.filter(Q(auto_match=True) | Q(verified=True)).order_by(F('beer_id__untappd__last_updated').asc())
         
         # Only retrieve new mappings
         if options['new']:
