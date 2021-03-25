@@ -9,7 +9,7 @@
                 <h3 style="margin:0">{{ beer.name }}</h3>
             </a>
             <ul>
-                {% with beer.untappd.all|first as untappd  %}
+                {% with beer.untappd as untappd %}
                     
                     {% comment %} Viser ølstil fra Untappd dersom det eksisterer mapping, ellers benyttes stil fra VMP {% endcomment %}
                     {% if untappd %}
