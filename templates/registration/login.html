@@ -1,0 +1,63 @@
+{% extends '_base.html' %}
+{% load static %}
+
+{% comment %} Remove Navigation {% endcomment %}
+{% block mobile_navigation %}
+{% endblock mobile_navigation %}
+
+{% block sidebar_navigation %}
+{% endblock sidebar_navigation %}
+
+{% block css %}
+    <link rel="stylesheet" href="{% static 'css/auth.css' %}">
+{% endblock css %}
+
+{% comment %} Login Form {% endcomment %}
+{% block content %}
+
+        <div class="flex h-screen">
+            
+            {% comment %} <div class="font-light text-2xl">
+                {% if form.errors %}
+                    <p>Your username and password didn't match. Please try again.</p>
+                {% endif %}
+            </div> {% endcomment %}
+            <div class="m-auto h-2/3">
+                <form method="post" action="{% url 'login' %}">
+                    {% csrf_token %}
+
+                    <div class="my-5 uppercase tracking-wider font-semibold text-center text-3xl md:text-5xl">
+                    Ølmonopolet
+                    </div>
+                    
+                    {% comment %} Username {% endcomment %}
+                    <div class="mb-2">
+                        <div class="font-light italic">
+                            {{ form.username.label_tag }}
+                        </div>
+                        <div class="border border-black rounded-md overflow-hidden">
+                            <span class="p-2">{{ form.username }}</span>
+                        </div>
+                    </div>
+
+                    {% comment %} Password {% endcomment %}
+                    <div class="mb-2">
+                        <div class="font-light italic">
+                            {{ form.password.label_tag }}
+                        </div>
+                        <div class="border border-black rounded-md overflow-hidden">
+                            <span class="p-2">{{ form.password }}</span>
+                        </div>
+                    </div>
+
+                    <div class="flex">
+                        <input class="mx-auto px-2 border border-black rounded-md bg-gray-300 font-light text-md cursor-pointer hover:bg-gray-400" type="submit" value="Logg inn">
+                    </div>
+
+                    {% comment %} Redirect to REFERER when LOGIN is successful {% endcomment %}
+                    <input type="hidden" name="next" value="{{ request.META.HTTP_REFERER }}">
+                </form>
+            </div>
+
+        </div>
+{% endblock content %}

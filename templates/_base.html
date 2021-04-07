@@ -13,104 +13,187 @@
     <!-- Alpine.JS-->
     <script src="https://cdn.jsdelivr.net/gh/alpinejs/alpine@v2.8.1/dist/alpine.min.js" defer></script>
     <title>{% block title %}Ølmonopolet{% endblock title %}</title>
+
+    {% comment %} CSS {% endcomment %}
+    {% block css %}{% endblock css %}
 </head>
 
 <body>
 
-    <!-- Mobile Navbar-->
-    <div class="w-screen sticky z-30 top-0 bg-gray-200 lg:hidden">
-        <div x-data="{ open: false }" class="flex flex-col px-4 mx-auto">
-            <div class="flex flex-row items-center justify-between p-2 text-gray-900">
-                <div class="flex flex-col">
-                    <a href="{% url 'home' %}" class="text-lg font-semibold tracking-wider uppercase rounded-lg focus:outline-none">Ølmonopolet</a>
-                <div class="-mt-1 text-sm italic font-extralight">
-                    <i class="fas fa-map-marker-alt fa-sm transform rotate-6 text-red-500"></i>
-                    <span>{{store}}</span>
+    {% block mobile_navigation %}
+
+        <!-- Mobile Navbar-->
+        <div class="w-screen sticky z-50 top-0 bg-gray-200 lg:hidden">
+            <div x-data="{ open: false }" class="flex flex-col px-4 mx-auto">
+                <div class="flex flex-row items-center justify-between p-2 text-gray-900">
+                    <div class="flex flex-col">
+                        <a href="{% url 'home' %}" class="text-lg font-semibold tracking-wider uppercase rounded-lg focus:outline-none">Ølmonopolet</a>
+                        <div class="flex -mt-1 text-sm italic font-extralight">
+                            {% comment %} Store {% endcomment %}
+                            <div class="mr-2">
+                                <i class="fas fa-map-marker-alt fa-sm transform rotate-6 text-red-500"></i>
+                                <span>{{ store }}</span>
+                            </div>
+                            
+                            {% comment %} Username {% endcomment %}
+                            {% if user.is_authenticated %}
+                                <div class="mr-2">
+                                    <i class="fas fa-user fa-sm"></i>
+                                    <span>{{ user.username }}</span>
+                                </div>
+                            {% endif %}
+
+                            {% comment %} Untappd Username {% endcomment %}
+                            {% if user.is_authenticated and user.profiles.untappd_username %}
+                                <div>
+                                    <i class="fab fa-untappd fa-sm text-yellow-400"></i>
+                                    <span>{{ user.profiles.untappd_username }}</span>
+                                </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                    <button class="focus:outline-none" @click="open = !open" @click.away="open = false">
+                        <i x-show="!open" class="fas fa-beer text-xl" x-transition:enter="transition ease-out duration-200" x-transition:enter-start="transform opacity-0 scale-75" x-transition:enter-end="transform opacity-100 scale-100"></i>
+                        <i x-show="open" class="fas fa-times text-xl" x-transition:enter="transition ease-out duration-200" x-transition:enter-start="transform opacity-0 scale-75" x-transition:enter-end="transform opacity-100 scale-100"></i>
+                    </button>
                 </div>
-                </div>
-                <button class="focus:outline-none" @click="open = !open" @click.away="open = false">
-                    <i x-show="!open" class="fas fa-beer text-xl" x-transition:enter="transition ease-out duration-200" x-transition:enter-start="transform opacity-0 scale-75" x-transition:enter-end="transform opacity-100 scale-100"></i>
-                    <i x-show="open" class="fas fa-times text-xl" x-transition:enter="transition ease-out duration-200" x-transition:enter-start="transform opacity-0 scale-75" x-transition:enter-end="transform opacity-100 scale-100"></i>
-                </button>
+                <nav :class="{'flex': open, 'hidden': !open}" class="flex-col flex-grow hidden pb-2 text-lg text-gray-900 font-light" x-show="open" x-transition:enter="transition ease-out duration-200" x-transition:enter-start="transform opacity-0 scale-50" x-transition:enter-end="transform opacity-100 scale-100" ">
+                    <div class="px-4 py-1 rounded-lg hover:bg-gray-100">
+                        <i class="w-6 fas fa-boxes"></i>
+                        <a class="focus:outline-none px-2" href="{% url 'beer_stock' store_id %}">Varelager</a>
+                    </div>
+                    <div class="px-4 py-1 rounded-lg  hover:bg-gray-100">
+                        <i class="w-6 far fa-calendar-alt"></i>
+                        <a class="focus:outline-none px-2" href="{% url 'stock_change' store_id %}">Lagerendringar</a>
+                    </div>
+                    <div class="px-4 py-1 rounded-lg  hover:bg-gray-100">
+                        <i class="w-6 fas fa-shipping-fast"></i>
+                        <a class="focus:outline-none px-2" href="{% url 'release_overview' store_id %}">Ølslepp</a>
+                    </div>
+                    <div class="px-4 py-1 rounded-lg  hover:bg-gray-100">
+                        <i class="w-6 fas fa-info"></i>
+                        <a class="focus:outline-none px-2" href="{% url 'about' store_id %}">Om</a>
+                    </div>
+
+                    {% comment %} Login/Logout {% endcomment %}
+                    {% if user.is_authenticated %}
+                        <div class="px-4 py-1 rounded-lg  hover:bg-gray-100">
+                            <i class="w-6 fas fa-sign-out-alt"></i>
+                            <a class="focus:outline-none px-2" href="{% url 'logout' %}?next={{ request.get_full_path }}">Logg ut</a>
+                        </div>
+                    {% else %}
+                        <div class="px-4 py-1 rounded-lg  hover:bg-gray-100">
+                            <i class="w-6 fas fa-sign-in-alt"></i>
+                            <a class="focus:outline-none px-2" href="{% url 'login' %}">Logg inn</a>
+                        </div>
+                    {% endif %}
+                </nav>
             </div>
-            <nav :class="{'flex': open, 'hidden': !open}" class="flex-col flex-grow hidden pb-2 text-lg text-gray-900 font-light" x-show="open" x-transition:enter="transition ease-out duration-200" x-transition:enter-start="transform opacity-0 scale-50" x-transition:enter-end="transform opacity-100 scale-100" ">
-                <div class="px-4 py-1 rounded-lg hover:bg-gray-100">
-                    <i class="w-6 fas fa-boxes"></i>
-                    <a class="focus:outline-none px-2" href="{% url 'beer_stock' store_id %}">Varelager</a>
-                </div>
-                <div class="px-4 py-1 rounded-lg  hover:bg-gray-100">
-                    <i class="w-6 far fa-calendar-alt"></i>
-                    <a class="focus:outline-none px-2" href="{% url 'stock_change' store_id %}">Lagerendringar</a>
-                </div>
-                <div class="px-4 py-1 rounded-lg  hover:bg-gray-100">
-                    <i class="w-6 fas fa-shipping-fast"></i>
-                    <a class="focus:outline-none px-2" href="{% url 'release_overview' store_id %}">Ølslepp</a>
-                </div>
-                <div class="px-4 py-1 rounded-lg  hover:bg-gray-100">
-                    <i class="w-6 fas fa-info"></i>
-                    <a class="focus:outline-none px-2" href="{% url 'about' store_id %}">Om</a>
-                </div>
-            </nav>
         </div>
-    </div>
+    {% endblock mobile_navigation %}
+
 
     <div class="container mx-auto ">
         <div class="flex">
 
-            <!-- sidebar for Navigation-->
-            <div id="sidebar" class="flex-none hidden lg:block w-2/12 cursor-default">
+            {% block sidebar_navigation %}
+                <!-- sidebar for Navigation-->
+                <div id="sidebar" class="flex-none hidden lg:block w-2/12 cursor-default">
 
-                <div class="flex flex-col font-light text-center text-xl text-gray-500 sticky top-0">
-                    
-                    <!-- Logo -->
-                    <div class="flex justify-center my-5">
-                        <div class='bg-gray-400 w-32 h-32'>
-                            ØLMONOPOLET LOGO
+                    <div class="flex flex-col font-light text-center text-xl text-gray-500 sticky top-0">
+                        
+                        <!-- Header -->
+                        <div class="my-7 text-black">
+                            <!-- Branding -->
+                            <a href="{% url 'home' %}" class="text-lg xl:text-2xl font-semibold tracking-wider uppercase rounded-lg focus:outline-none">Ølmonopolet</a>
+                            
+                            {% comment %} Store {% endcomment %}
+                            <div class="text-sm -mt-1">
+                                <i class="fas fa-map-marker-alt fa-sm text-red-500"></i>
+                                <span class="">{{ store }}</span>
+                            </div>
                         </div>
-                    </div>
 
-                    {% comment %} Hent ut ID til store dynamisk for bruk til URL {% endcomment %}
-                    {% firstof store_id store.store_id as store_id %}
-                    <!-- Store -->
-                    <div class="flex flex-col py-2 my-2 mx-2 border-t border-b">
-                        <div class="text-sm font-bold italic">
-                            Valgt Butikk
-                        </div>
-                        <div class="text-lg">
-                            <i class="fas fa-map-marker-alt fa-sm text-red-500"></i>
-                            <span class="">{{ store }}</span>
-                        </div>
-                        <div class="text-xs font-light italic">
-                            <a href="{% url 'home' %}">Bytt Butikk</a> 
-                        </div>
-                    </div>
+                        {% comment %} User status {% endcomment %}
+                        <div class="flex flex-col text-sm mb-2">
+                            
+                            {% if user.is_authenticated %}
+                            
+                                {% comment %} Profile image {% endcomment %}
+                                <div class="mx-auto rounded-full overflow-hidden w-24 h-24">
+                                    {% if user.is_authenticated and user.profiles.untappd_avatar_url %}
+                                        <img src="{{ user.profiles.untappd_avatar_url }}" alt="">
+                                    {% else %}
+                                        <div class="flex mx-auto text-6xl border rounded-full overflow-hidden items-center w-24 h-24">
+                                            <i class="m-auto fas fa-user"></i>
+                                        </div>
+                                    {% endif %}
+                                </div>
+                                
+                                {% comment %} Ølmonopolet Username {% endcomment %}
+                                <div class="text-lg mt-1">
+                                    <i class="fas fa-user fa-sm"></i>
+                                    <span> {{ user.username }} </span>
+                                </div>
 
-                    <div class="my-2 transform ease-in duration-100 hover:scale-110 hover:text-gray-700">
-                        <a href="{% url 'beer_stock' store_id %}">
-                            <i class="fas fa-boxes "></i>
-                            <span class="">Varelager</span>
-                        </a>
-                    </div>
-                    <div class="my-2 transform ease-in duration-100 hover:scale-110 hover:text-gray-700">
-                        <a href="{% url 'stock_change' store_id %}">
-                            <i class="far fa-calendar-alt"></i>
-                            <span class="">Lagerendringar</span>
-                        </a>
-                    </div>
-                    <div class="my-2 transform ease-in duration-100 hover:scale-110 hover:text-gray-700">
-                        <a href="{% url 'release_overview' store_id %}">
-                            <i class="fas fa-shipping-fast"></i>
-                            <span class="">Ølslepp</span>
-                        </a>
-                    </div>
-                    <div class="my-2 transform ease-in duration-100 hover:scale-110 hover:text-gray-700">
-                        <a class="" href="{% url 'about' store_id %}">
-                            <i class="fas fa-info"></i>
-                            <span class="">Om</span>
-                        </a>
+                                {% comment %} Untappd Username {% endcomment %}
+                                {% if user.is_authenticated and user.profiles.untappd_username %}
+                                    <div class="text-xs">
+                                        <i class="fab fa-untappd text-yellow-400"></i>
+                                        <span> {{ user.profiles.untappd_username }} </span>
+                                    </div>
+                                {% endif %}
+
+                                {% comment %} Logout button {% endcomment %}
+                                <div class="mx-auto px-2 my-2 rounded-md hover:bg-gray-200 border hover:text-gray-700">
+                                    <a href="{% url 'logout' %}?next={{ request.get_full_path }}" class="outline-none">Logg ut</a>
+                                </div>
+                            {% else %}
+                                
+                                {% comment %} Unknown user image {% endcomment %}
+                                <div class="flex mx-auto text-6xl border rounded-full overflow-hidden items-center w-24 h-24">
+                                    <i class="m-auto fas fa-user"></i>
+                                </div>
+
+                                {% comment %} Login button {% endcomment %}
+                                <div class="mx-auto px-2 my-2 rounded-md hover:bg-gray-200 border hover:text-gray-700">
+                                    <a href="{% url 'login' %}" class="outline-none">Logg inn</a>
+                                </div>
+
+                            {% endif %}
+                            
+                        </div>
+
+                        {% comment %} Hent ut ID til store dynamisk for bruk til URL {% endcomment %}
+                        {% firstof store_id store.store_id as store_id %}
+
+                        <div class="my-2 transform ease-in duration-100 hover:scale-110 hover:text-gray-700">
+                            <a href="{% url 'beer_stock' store_id %}">
+                                <i class="fas fa-boxes "></i>
+                                <span class="">Varelager</span>
+                            </a>
+                        </div>
+                        <div class="my-2 transform ease-in duration-100 hover:scale-110 hover:text-gray-700">
+                            <a href="{% url 'stock_change' store_id %}">
+                                <i class="far fa-calendar-alt"></i>
+                                <span class="">Lagerendringar</span>
+                            </a>
+                        </div>
+                        <div class="my-2 transform ease-in duration-100 hover:scale-110 hover:text-gray-700">
+                            <a href="{% url 'release_overview' store_id %}">
+                                <i class="fas fa-shipping-fast"></i>
+                                <span class="">Ølslepp</span>
+                            </a>
+                        </div>
+                        <div class="my-2 transform ease-in duration-100 hover:scale-110 hover:text-gray-700">
+                            <a class="" href="{% url 'about' store_id %}">
+                                <i class="fas fa-info"></i>
+                                <span class="">Om</span>
+                            </a>
+                        </div>
                     </div>
                 </div>
-            </div>
+            {% endblock sidebar_navigation %}
 
             <!-- Main Content -->
             <div id="content" class="flex-auto static">
