@@ -46,6 +46,7 @@ INSTALLED_APPS = [
     'corsheaders',
 
     # Local Apps
+    'profiles.apps.ProfilesConfig',
     'api.apps.ApiConfig',
     'beers.apps.BeersConfig',
     'stores.apps.StoresConfig',
@@ -151,6 +152,10 @@ STATICFILES_FINDERS = [
     "django.contrib.staticfiles.finders.FileSystemFinder",
     "django.contrib.staticfiles.finders.AppDirectoriesFinder",
 ]
+
+# Authentication
+LOGIN_REDIRECT_URL='home'
+LOGOUT_REDIRECT_URL='home'
 
 # Django REST Framework Settings
 REST_FRAMEWORK={

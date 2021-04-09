@@ -1,4 +1,5 @@
 from django.db import models
+from django.contrib.auth.models import User
 from beers.models import Beer
 
 # Create your models here.
@@ -47,6 +48,22 @@ class UntappdMapping(models.Model):
     class Meta:
         verbose_name = 'Untappd Mapping'
         verbose_name_plural = 'Untappd Mappings'
+
+    def __str__(self):
+        # Return the name of the beer_id based on relationship
+        return self.beer_id.name
+
+class UserCheckIn(models.Model):
+    '''
+    Beers checked in to Untappd by User
+    '''
+    user = models.ForeignKey(User, verbose_name='Users', related_name='user_check_ins', on_delete=models.CASCADE)
+    beer_id = models.ForeignKey(Beer, verbose_name='Beers', related_name='beer_check_ins', on_delete=models.CASCADE)
+    rating = models.FloatField(help_text="Untappd rating by user from first check-in", default=0)
+
+    class Meta:
+        verbose_name = 'User Check-In'
+        verbose_name_plural = 'User Check-Ins'
 
     def __str__(self):
         # Return the name of the beer_id based on relationship

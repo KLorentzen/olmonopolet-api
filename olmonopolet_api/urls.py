@@ -18,12 +18,19 @@ from django.urls import path, include
 from olmonopolet_api import views
 
 urlpatterns = [
+    # Admin
     path('kjellaren/', admin.site.urls),
+
+    # Auth
+    path('profiles/',include('django.contrib.auth.urls')),
+    path('profiles/',include('profiles.urls')),
+    # Django Rest API
     # path('api/v1/',include('api.urls')),
     path('api-auth/',include('rest_framework.urls')),
     path('about/<int:store_id>/', views.AboutTemplateView.as_view(), name='about'),
     path('beers/', include('beers.urls')),
     path('stock/', include('stock.urls')),
+    path('untappd/', include('untappd.urls')),
     path('', include('stores.urls')),
     #TODO: Add 404 for fallthrough paths
 ]
