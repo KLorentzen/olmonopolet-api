@@ -45,9 +45,18 @@
 
                             {% comment %} Untappd Username {% endcomment %}
                             {% if user.is_authenticated and user.profiles.untappd_username %}
-                                <div>
+                                <div class="mr-2">
                                     <i class="fab fa-untappd fa-sm text-yellow-400"></i>
                                     <span>{{ user.profiles.untappd_username }}</span>
+                                </div>
+                                <div>
+                                    <i class="fas fa-sync-alt text-green-500 ml-1 cursor-pointer"
+                                            hx-get="{% url 'sync_untappd_user' %}" hx-trigger="click" hx-target="#untappd-sync-nav" hx-indicator=".htmx-sync-indicator"></i>
+                                    <div id="untappd-sync-nav" class="text-xs inline">
+                                        {% comment %} Untappd Sync Status injected {% endcomment %}
+                                    </div>
+                                    {% comment %} Search spinner {% endcomment %}
+                                    <img class="htmx-sync-indicator htmx-indicator w-4 mx-1 inline" src="{% static 'svg/spinners/bars.svg' %}" />
                                 </div>
                             {% endif %}
                         </div>
@@ -118,7 +127,7 @@
                         <div class="flex flex-col text-sm mb-2">
                             
                             {% if user.is_authenticated %}
-                            
+
                                 {% comment %} Profile image {% endcomment %}
                                 <div class="mx-auto rounded-full overflow-hidden w-24 h-24">
                                     {% if user.is_authenticated and user.profiles.untappd_avatar_url %}
@@ -141,6 +150,13 @@
                                     <div class="text-xs">
                                         <i class="fab fa-untappd text-yellow-400"></i>
                                         <span> {{ user.profiles.untappd_username }} </span>
+                                        <i class="fas fa-sync-alt text-green-500 ml-1 cursor-pointer"
+                                            hx-get="{% url 'sync_untappd_user' %}" hx-trigger="click" hx-target="#untappd-sync" hx-indicator=".htmx-sync-indicator"></i>
+                                        {% comment %} Search spinner {% endcomment %}
+                                        <img class="htmx-sync-indicator htmx-indicator w-4 mx-1 inline" src="{% static 'svg/spinners/bars.svg' %}" />
+                                    </div>
+                                    <div id="untappd-sync" class="text-xs">
+                                        {% comment %} Untappd Sync Status injected {% endcomment %}
                                     </div>
                                 {% endif %}
 

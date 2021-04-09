@@ -1,0 +1,6 @@
+{% if sync_status %}
+    <span>OK</span>
+    {% comment %} <span>OK, synkroniserte {{ beers_syncronized|length}} nye innsjekk </span> {% endcomment %}
+{% else %}
+    <span>ERROR</span>
+{% endif %}

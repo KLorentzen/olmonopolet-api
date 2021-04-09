@@ -5,8 +5,9 @@ from stores.models import Store
 from .serializers import BeerSerializer
 from rest_framework import generics
 from django.views.generic import TemplateView
-from django.db.models import F, Q
+from django.db.models import F, Q, OuterRef, Subquery
 from django.utils import timezone
+from untappd.models import UserCheckIn
 
 # Create your views here.
 
@@ -16,7 +17,15 @@ def store_beers(request, store_id):
     Returns all beers in stock at given Vinmonopolet store
     Paginated in order to use infinite scroll
     '''
+    
     queryset = Beer.objects.filter(beerstock__product_stock__gt=0).filter(beerstock__store_id=store_id).order_by(F('untappd__rating').desc(nulls_last=True))
+    
+    if request.user.is_authenticated:
+        
+        # This subquery returns the rating of any beers the User has checked in to Untappd
+        check_in_subquery = UserCheckIn.objects.filter(beer_id = OuterRef('beer_id'),user_id=request.user)
+        queryset = queryset.annotate(untappd_rating=Subquery(check_in_subquery.values('rating')[:1]))
+
     paginator = Paginator(queryset, 50, 0)
 
     page_number = request.GET.get('page')
@@ -37,7 +46,12 @@ def beer_stock_search(request, store_id):
         queryset = Beer.objects.filter(beerstock__product_stock__gt=0).filter(beerstock__store_id=store_id).order_by(F('untappd__rating').desc(nulls_last=True))
         # Find beers that match 'query' by name or brewery 
         queryset = queryset.filter(Q(name__icontains=request.POST["query"]) | Q(brewery__icontains=request.POST["query"]))
-    
+        
+        if request.user.is_authenticated:
+            # This subquery returns the rating of any beers the User has checked in to Untappd
+            check_in_subquery = UserCheckIn.objects.filter(beer_id = OuterRef('beer_id'),user_id=request.user)
+            queryset = queryset.annotate(untappd_rating=Subquery(check_in_subquery.values('rating')[:1]))
+
     else:
         # Returns all beers in stock if query string is empty ('')
         return redirect('store_beers', store_id)

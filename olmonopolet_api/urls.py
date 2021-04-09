@@ -30,6 +30,7 @@ urlpatterns = [
     path('about/<int:store_id>/', views.AboutTemplateView.as_view(), name='about'),
     path('beers/', include('beers.urls')),
     path('stock/', include('stock.urls')),
+    path('untappd/', include('untappd.urls')),
     path('', include('stores.urls')),
     #TODO: Add 404 for fallthrough paths
 ]

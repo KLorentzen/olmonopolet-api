@@ -1,11 +1,12 @@
+{% load i18n %}
 
 {% comment %} Beer cards {% endcomment %}
 {% for beer in beers %}
 {% with beer.untappd as untappd %}
 {% with beer.beerstock.all|first as stock %}
-    <div class="rounded-md border shadow border-gray-700">
+    <div class="rounded-md border shadow border-gray-700 overflow-hidden">
 
-        <div class="flex justify-between my-2">
+        <div class="flex justify-between py-2">
 
             {% comment %} Beer name and details {% endcomment %}
             <div class="flex flex-col mx-2 text-sm font-light">
@@ -30,7 +31,7 @@
                             <span>Lanserast {{ beer.launch_date|date:"j F Y" }}</span>
                         </div>
                     {% endif %}
-
+                    
                     {% comment %} Vinmonopolet Detail Section {% endcomment %}
                     <div class="flex flex-wrap">
                         {% comment %} Beer Price {% endcomment %}
@@ -75,14 +76,33 @@
                                 <i class="fas fa-users mr-1"></i>
                                 <div class=""> {{ untappd.num_ratings }} </div>
                             </div>
+                            
+                            {% comment %} User Rating from 1st Check-In {% endcomment %}
+                            {% if beer.untappd_rating %}
+                                <div class="flex items-center mr-2">
+                                    <i class="fas fa-user"></i>
+                                    <i class="fab fa-untappd text-yellow-400 mr-1 -ml-1 -mt-2 text-xs transform scale-75"></i>
+                                    <div class=""> {{ beer.untappd_rating|floatformat:"-2" }} </div>
+                                </div>
+                            {% endif %}
                         </div>
                     {% endif %}
 
                 </div>
             </div>
 
-            <div class="flex flex-none justify-between flex-col mx-2">
+            <div class="flex flex-none justify-between flex-col ml-2 mr-5">
                 
+                {% comment %} Check in Status{% endcomment %}
+                {% if beer.untappd_rating %}
+                    <div class="flex mx-auto h-8 -mt-5 -mr-12 z-0 text-xs">
+                        <div class="mt-4 -mr-8 transform scale-75 z-10 text-gray-100">
+                            <i class="fas fa-user-check"> </i>
+                        </div>
+                        <div class="transform rotate-45 w-16 h-10 font-light bg-green-500 "></div>
+                    </div>
+                {% endif %}
+
                 {% comment %} Special Icons {% endcomment %}
                 <div class="flex justify-between fa-lg">
                         
@@ -109,10 +129,10 @@
                 <div class="flex-none place-self-center">
                     {% if untappd %}
                         <a href="{{ untappd.url }}" target="_blank">
-                            <img class="w-20 md:w-28 h-20 md:h-28 object-scale-down" src="{{ beer.get_image_url }}" alt="">
+                            <img class="w-20 md:w-24 h-20 md:h-24 object-scale-down" src="{{ beer.get_image_url }}" alt="">
                         </a>
                     {% else %}
-                        <img class="w-20 md:w-28 h-20 md:h-28 object-scale-down" src="{{ beer.get_image_url }}" alt="">
+                        <img class="w-20 md:w-24 h-20 md:h-24 object-scale-down" src="{{ beer.get_image_url }}" alt="">
                     {% endif %}
                 </div>
 
