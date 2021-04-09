@@ -20,7 +20,16 @@
                 <div class="flex flex-col border-t border-0 border-gray-500 my-1 pt-1">
                     
                     {% comment %} Beer Selection {% endcomment %}
-                    <div class="italic">{{ beer.selection }}</div>
+                    <div class="italic">
+                        {% translate beer.selection %}
+                    </div>
+                    
+                    {% comment %} Beer Release Date {% endcomment %}
+                    {% if not beer.buyable %}
+                        <div class="italic">
+                            <span>Lanserast {{ beer.launch_date|date:"j F Y" }}</span>
+                        </div>
+                    {% endif %}
 
                     {% comment %} Vinmonopolet Detail Section {% endcomment %}
                     <div class="flex flex-wrap">
