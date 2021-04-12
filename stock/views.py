@@ -1,6 +1,6 @@
 from django.shortcuts import render
 from django.core.paginator import Paginator
-from django.db.models import Max
+from django.db.models import Max, OuterRef, Subquery
 from rest_framework import generics
 from .models import BeerStock
 from beers.models import Beer
@@ -8,6 +8,7 @@ from stores.models import Store
 from .serializers import BeerStockSerializer
 from django.views.generic import TemplateView
 from datetime import datetime, timedelta
+from untappd.models import UserCheckIn
 
 
 # View Functions
@@ -17,6 +18,12 @@ def stock_change_in(request, store_id):
     Paginated in order to use infinite scroll
     '''
     queryset = BeerStock.objects.filter(store_id=store_id).order_by('-complete_restock_date', 'beer_id__name')
+
+    if request.user.is_authenticated:
+        # This subquery returns the rating of any beers the User has checked in to Untappd
+        check_in_subquery = UserCheckIn.objects.filter(beer_id = OuterRef('beer_id'),user_id=request.user)
+        queryset = queryset.annotate(untappd_rating=Subquery(check_in_subquery.values('rating')[:1]))
+
 
     paginator = Paginator(queryset, 75, 0)
 
@@ -32,6 +39,11 @@ def stock_change_out(request, store_id):
     '''
     queryset = BeerStock.objects.filter(out_of_stock_date__isnull=False).filter(store_id=store_id).order_by('-out_of_stock_date', 'beer_id__name')
 
+    if request.user.is_authenticated:
+        # This subquery returns the rating of any beers the User has checked in to Untappd
+        check_in_subquery = UserCheckIn.objects.filter(beer_id = OuterRef('beer_id'),user_id=request.user)
+        queryset = queryset.annotate(untappd_rating=Subquery(check_in_subquery.values('rating')[:1]))
+        
     paginator = Paginator(queryset, 75, 0)
 
     page_number = request.GET.get('page')

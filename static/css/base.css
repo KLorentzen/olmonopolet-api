@@ -767,6 +767,10 @@ video {
   align-items: center;
 }
 
+.justify-end {
+  justify-content: flex-end;
+}
+
 .justify-center {
   justify-content: center;
 }
@@ -1003,6 +1007,10 @@ video {
 
 .-mt-5 {
   margin-top: -1.25rem;
+}
+
+.-mt-6 {
+  margin-top: -1.5rem;
 }
 
 .-mr-8 {

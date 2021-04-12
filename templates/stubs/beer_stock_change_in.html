@@ -25,7 +25,7 @@
         {% with beer.beer_id.untappd as untappd %}
 
         {% comment %} Beer List Item{% endcomment %}
-        <div class="flex justify-between py-2">
+        <div class="flex justify-between py-2 overflow-hidden">
             
             <div class="flex flex-col mx-2 text-sm font-light ">
                 
@@ -85,12 +85,33 @@
                             <i class="fas fa-users mr-1"></i>
                             <div class=""> {{ untappd.num_ratings }} </div>
                         </div>
+
+                        {% comment %} User Rating from 1st Check-In {% endcomment %}
+                        {% if beer.untappd_rating %}
+                            <div class="flex items-center mr-2">
+                                <i class="fas fa-user"></i>
+                                <i class="fab fa-untappd text-yellow-400 mr-1 -ml-1 -mt-2 text-xs transform scale-75"></i>
+                                <div class=""> {{ beer.untappd_rating|floatformat:"-2" }} </div>
+                            </div>
+                        {% endif %}
                     {% endif %}
                 </div>
             </div>
 
             {% comment %} Image {% endcomment %}
-            <div class="flex-none place-self-center mx-2">
+            <div class="flex flex-none justify-between flex-col ml-2 mr-5">
+                
+                {% comment %} Untappd Check-In status {% endcomment %}
+                {% if beer.untappd_rating %}
+                    <div class="flex justify-end mx-auto h-8 -mr-12 -mt-6 text-xs">
+                        <div class="mt-4 -mr-8 transform scale-75 z-10 text-gray-100">
+                            <i class="fas fa-user-check"> </i>
+                        </div>
+                        <div class="transform rotate-45 w-16 h-10 font-light bg-green-500 "></div>
+                    </div>
+                {% endif %}
+
+                {% comment %} Untappd Image {% endcomment %}
                 {% if untappd %}
                     <a href="{{ untappd.url }}" target="_blank">
                         <img class="w-20 h-20 object-scale-down" src="{{ beer.beer_id.get_image_url }}" alt="">
