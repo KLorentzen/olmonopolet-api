@@ -109,6 +109,7 @@ class Command(BaseCommand):
                     last_available_stock = existing_stock.last_product_stock
                 except ObjectDoesNotExist as err:
                     # Implies that beer has never been in stock before and should be 0
+                    existing_stock = None
                     current_stock = 0
                     last_available_stock = None
                     restock_date = date.today()
