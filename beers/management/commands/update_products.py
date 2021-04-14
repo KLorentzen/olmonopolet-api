@@ -1,22 +1,19 @@
 from django.core.management.base import BaseCommand
 from beers.models import Product, Beer
-from untappd.models import UntappdMapping
 from django.db.utils import IntegrityError
 from olmonopolet.vmp_api import products as vmp_api_products 
 from olmonopolet.vmp_scraper import product_details as vmp_details
 from olmonopolet.vmp_api import utilities as vmp_utils  
-from olmonopolet.untappd_scraper import mapping 
 from datetime import datetime
 
 class Command(BaseCommand):
     help = '''
     Update database with products from Vinmonopolet
 
-    1. Gets all products currently in stock at Vinmonopolet from products/GET accumulated-stock
+    1. Gets all products currently in stock at Vinmonopolet from URL with JSON response
     2. Add new products to database
     3. Check which products are of given category and add them to Beer model.
-        - categories: [øl, mjød]
-    4. Map beer name from Vinmonopolet with beer at Untappd.com. If mapping is obtained it will be written to the UntappdMapping model.
+        - categories: [øl, mjød, sider]
     
     '''
 
@@ -32,17 +29,28 @@ class Command(BaseCommand):
         # Obtain session ID from VMP
         vmp_session_cookie = vmp_utils.get_VMP_cookies()
 
-        # Retrieves all VMP products currently in stock
-        all_products = vmp_api_products.get_all_products()
+        # Retrieves all products currently in stock
+        product_types = ['øl', 'mjød', 'sider']
+        all_products = []
+
+        for product_type in product_types:
+            page = 0
+            while True:
+                HTTP_CODE, products, total_page_count = vmp_api_products.get_products(product_type, page, vmp_session_cookie)
+                page += 1
+                all_products.extend(products)
+
+                if page > total_page_count:
+                    break
 
         for product in all_products:
 
             # Only add the product if not already in the database
-            if int(product["productId"]) in db_products:
+            if int(product["code"]) in db_products:
                 pass
             else:
                 # Get product details from Vinmonopolet
-                product_details = vmp_api_products.get_product_details(product["productId"], vmp_session_cookie)
+                product_details = vmp_api_products.get_product_details(product["code"], vmp_session_cookie)
 
                 if not product_details:
                     self.stdout.write("Could not connect with Vinmonopolet")
@@ -50,37 +58,32 @@ class Command(BaseCommand):
 
                 # Add product to Product table
                 new_prod_obj = Product.objects.create(
-                    product_id = product["productId"],
-                    main_category = product_details["main_category"]["code"] 
+                    product_id = product["code"],
+                    main_category = product["main_category"]["name"].lower() 
                     )
 
-                # Add all products that are 'øl' to the Beer table
-                if product_details["main_category"]["code"] in ['øl', 'mjød']:
-                    try:
-                        
-                        # Get Additional details about the beer from the Web Page
-                        # TODO: Deprecated after URL with full product details were found
-                        # product_web_details = vmp_details.get_details_web(product_details["url"])
-                        
-                        beer_obj = Beer.objects.create(
-                            beer_id = new_prod_obj ,
-                            name = product_details["name"],
-                            brewery = product_details['main_producer']['name'],
-                            country = product_details["main_country"]["code"],
-                            style = product_details['main_sub_category']['name'] if "main_sub_category" in product_details else None,
-                            price = product_details["price"]["value"],
-                            alc_volume = product_details['alcohol']['value'],
-                            volume = product_details["volume"]["value"],
-                            selection = product_details["product_selection"] if "product_selection" in product_details else None,
-                            url = 'https://www.vinmonopolet.no' + product_details["url"],
-                            status = product_details["status"],
-                            buyable = product_details["buyable"],
-                            launch_date = datetime.strptime(product_details["expiredDate"],"%Y-%m-%d") 
-                            ),
+                # Add all products to the Beer table
+                try:
+                    
+                    beer_obj = Beer.objects.create(
+                        beer_id = new_prod_obj ,
+                        name = product["name"],
+                        brewery = product_details['main_producer']['name'],
+                        country = product["main_country"]["name"],
+                        style = product_details['main_sub_category']['name'] if "main_sub_category" in product_details else None,
+                        price = product["price"]["value"],
+                        alc_volume = product_details['alcohol']['value'],
+                        volume = product["volume"]["value"],
+                        selection = product["product_selection"] if "product_selection" in product_details else None,
+                        url = 'https://www.vinmonopolet.no' + product["url"],
+                        status = product["status"],
+                        buyable = product["buyable"],
+                        launch_date = datetime.strptime(product_details["expiredDate"],"%Y-%m-%d") 
+                        ),
 
-                    except Exception as err:
-                        self.stdout.write(f"Could not insert beer: {product['productId']}")
-                        self.stdout.write(err)
+                except Exception as err:
+                    self.stdout.write(f"Could not insert beer: {new_prod_obj}")
+                    self.stdout.write(err)
                 
                 new_products += 1
 
