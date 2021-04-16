@@ -1,19 +1,20 @@
 import httpx
 
-def get_stock_all_stores(beer_id, vmp_session_cookie):
+def get_store_stock(beer_id, store, vmp_session_cookie):
     '''
-    Get stock for given beer in all Vinmonopolet's stores
+    Get stock for given beer in a Vinmonopole store  
     
-    Arguments:
-    arg1 int: Beer id to return stock quantity for
-    arg2 obj: httpx.cookie instance from VMP including session ID
+    Arguments:  
+    arg1 int: Beer id to return stock quantity for   
+    arg2 obj: Store model instance  
+    arg3 obj: httpx.cookie instance from VMP including session ID  
     
-    Returns:
-    list: List with beer stock details in all VMP stores
+    Returns:  
+    list: List with beer stock details in all VMP stores  
     '''
     URL = f"https://www.vinmonopolet.no/api/products/{beer_id}/stock"
-    PARAMS = {"latitude": 62.7, "longitude": 7.18, "pageSize": 1000, "fields":'BASIC'}
-    # Add exception handling
+    PARAMS = {"latitude": store.latitude, "longitude": store.longitude, "pageSize": 10, "fields":'BASIC'}
+    
     try:
         beer_stock = httpx.get(URL, params=PARAMS, cookies=vmp_session_cookie, allow_redirects=True)
 

@@ -3,12 +3,10 @@ from beers.models import Beer
 from stock.models import BeerStock, WatchList
 from stores.models import Store
 from sales.models import DailySale
-from django.db.utils import IntegrityError
 from olmonopolet.vmp_api import beer_stock
 from olmonopolet.vmp_api import utilities as vmp_utils  
 from olmonopolet.stock import restock, sales 
 from olmonopolet.notifications import restock as notification
-from django.core.exceptions import ObjectDoesNotExist
 from datetime import date, datetime
 
 class Command(BaseCommand):
@@ -48,117 +46,121 @@ class Command(BaseCommand):
         else: 
             # Retrieve all beers in database which are not added to WatchList
             beers = Beer.objects.filter(watchlist = None)
-            # beers = Beer.objects.filter(name__contains='Kveldsbris') | Beer.objects.filter(name__contains='Lervig')
+
+        # Retrieve all active Vinmonopolet Stores
+        active_stores = Store.objects.filter(active=True).order_by('category')
 
         for beer in beers:
 
-            # Get Stores which have had the beer in stock at some point
-            old_stock = BeerStock.objects.filter(beer_id=beer).values_list("store_id",flat=True)
-            
-            # Get current stock from VMP
-            stock_all_stores = beer_stock.get_stock_all_stores(beer.beer_id, vmp_session_cookie)
-            
-            # Store IDs of stores with stock > 0
-            stores_with_stock = [int(i['pointOfService']['name']) for i in stock_all_stores]
+            # Update Stock for all Active Stores
+            for store in active_stores:
 
-            empty_stores = filter(lambda x: x not in stores_with_stock,old_stock)
-            
-            # Set stock to 0 in all stores out of stock, but which has previously had it in stock
-            for empty_store in empty_stores:
-
-                # TODO: try/except dersom det ikke returneres noe (ObjectDoesNotExist)
-                vmp_store = Store.objects.get(store_id=empty_store)
-                current_stock = BeerStock.objects.get(beer_id=beer,store_id=vmp_store)
-
-                obj, created = BeerStock.objects.update_or_create(
-                    beer_id = beer,
-                    store_id = vmp_store,
-                    defaults={
-                    'product_stock' : 0,
-                    'last_product_stock' : current_stock.product_stock if current_stock.product_stock > 0 else current_stock.last_product_stock,
-                    'out_of_stock_date': date.today() if current_stock.product_stock > 0 else current_stock.out_of_stock_date
-                    }
-                )
-                
-                daily_sales = sales.get_daily_beer_sale(
-                    beer,
-                    vmp_store, 
-                    current_stock.product_stock, 
-                    obj.product_stock,
-                    None
-                )
-                
-                sale_obj, created = DailySale.objects.update_or_create(
-                    beer_id = beer,
-                    store_id = vmp_store,
-                    sales_day = date.today(),
-                    defaults={
-                    'beers_sold': daily_sales
-                    }
-                )
-                self.stdout.write(f"Updated {obj.beer_id.name}, stock: {obj.product_stock}, sales: {sale_obj.beers_sold}, store: {vmp_store}")
-                
-            # Filter stock to only write stock for Molde/Egersund
-            for store_stock in filter(lambda x: x['pointOfService']['name'] in [str(244),str(209)], stock_all_stores):
-                vmp_store = Store.objects.get(store_id=int(store_stock['pointOfService']['name']))
-
+                # Has Beer been in stock at Vinmonopolet Store - retrieve BeerStock instance
                 try:
-                    existing_stock = BeerStock.objects.get(beer_id=beer, store_id=vmp_store)
-                    # self.stdout.write(f"current stock {current_stock.product_stock} on {datetime.date.today()}")
-                    current_stock = existing_stock.product_stock
-                    last_available_stock = existing_stock.last_product_stock
-                except ObjectDoesNotExist as err:
-                    # Implies that beer has never been in stock before and should be 0
-                    existing_stock = None
-                    current_stock = 0
-                    last_available_stock = None
-                    restock_date = date.today()
-                    
-                obj, created = BeerStock.objects.update_or_create(
-                    beer_id = beer,
-                    store_id = vmp_store,
-                    defaults={
-                    'product_stock' : store_stock["stockInfo"]["stockLevel"],
-                    'last_product_stock' : None, 
-                    'restock_qty' : restock.get_restock_qty(current_stock, store_stock["stockInfo"]["stockLevel"],last_available_stock) if restock.is_restocked(current_stock, store_stock["stockInfo"]["stockLevel"], last_available_stock) else existing_stock.restock_qty,
-                    'restock_date' : date.today() if restock.is_restocked(current_stock, store_stock["stockInfo"]["stockLevel"], last_available_stock) else existing_stock.restock_date,
-                    'out_of_stock_date' : None,
-                    'complete_restock_date' : existing_stock.complete_restock_date if existing_stock else restock_date
-                    }
-                )
-                
-                daily_sales = sales.get_daily_beer_sale(
-                    beer,
-                    vmp_store, 
-                    current_stock, 
-                    obj.product_stock,
-                    last_available_stock
-                )
-                
-                sale_obj, created = DailySale.objects.update_or_create(
-                    beer_id = beer,
-                    store_id = vmp_store,
-                    sales_day = date.today(),
-                    defaults={
-                    'beers_sold': daily_sales
-                    }
-                )
+                    current_stock = BeerStock.objects.get(beer_id=beer, store_id=store)
+                except:
+                    # If stock cannot be retrieved it implies that stock
+                    current_stock = False
 
-                # All beers that are restocked, and have been out of stock (current stock=0), for a store will be added to notification "restock"
-                # Also beers that are restocked while store stock is falsly set to 0 will be emailed as restocked
-                if restock.is_restocked(current_stock, store_stock["stockInfo"]["stockLevel"], last_available_stock) and current_stock == 0:
-                    notify_restock.setdefault(vmp_store,[]).append(beer)
+                # Get current stock from VMP for provided Store
+                vmp_stock = beer_stock.get_store_stock(beer.beer_id, store, vmp_session_cookie)
+                
+                # Store IDs of stores with stock > 0
+                stores_with_stock = [int(i['pointOfService']['name']) for i in vmp_stock]
+                
+                # Beer has previously been in stock but is currently not in stock
+                # Set stock to 0 in all stores out of stock, but which has previously had it in stock
+                if current_stock and store.store_id not in stores_with_stock:
 
-                    # Update date when stock was completely re-stocked for given beer
                     obj, created = BeerStock.objects.update_or_create(
-                    beer_id = beer,
-                    store_id = vmp_store,
-                    defaults={
-                        'complete_restock_date' : date.today(),
-                    }
-                )
+                        beer_id = beer,
+                        store_id = store,
+                        defaults={
+                        'product_stock' : 0,
+                        'last_product_stock' : current_stock.product_stock if current_stock.product_stock > 0 else current_stock.last_product_stock,
+                        'out_of_stock_date': date.today() if current_stock.product_stock > 0 else current_stock.out_of_stock_date
+                        }
+                    )
+                    
+                    daily_sales = sales.get_daily_beer_sale(
+                        beer,
+                        store, 
+                        current_stock.product_stock, 
+                        obj.product_stock,
+                        None
+                    )
+                    
+                    sale_obj, created = DailySale.objects.update_or_create(
+                        beer_id = beer,
+                        store_id = store,
+                        sales_day = date.today(),
+                        defaults={
+                        'beers_sold': daily_sales
+                        }
+                    )
+                    self.stdout.write(f"Updated {obj.beer_id.name}, stock: {obj.product_stock}, sales: {sale_obj.beers_sold}, store: {store}")
 
-                self.stdout.write(f"Updated {obj.beer_id.name}, stock: {obj.product_stock}, sales: {sale_obj.beers_sold}, store: {vmp_store}")
+                elif store.store_id in stores_with_stock:   
+
+                    # Extract Stock response from Vinmonopolet associated with store
+                    store_stock = next((filter(lambda x: x['pointOfService']['name'] in str(store.store_id), vmp_stock)))
+
+                    if current_stock:
+                        current_stock_qty = current_stock.product_stock
+                        last_available_stock = current_stock.last_product_stock
+
+                    else:
+                        # Implies that beer has never been in stock before and should be 0
+                        current_stock = None
+                        current_stock_qty = 0
+                        last_available_stock = None
+                        restock_date = date.today()
+                        
+                    obj, created = BeerStock.objects.update_or_create(
+                        beer_id = beer,
+                        store_id = store,
+                        defaults={
+                        'product_stock' : store_stock["stockInfo"]["stockLevel"],
+                        'last_product_stock' : None, 
+                        'restock_qty' : restock.get_restock_qty(current_stock_qty, store_stock["stockInfo"]["stockLevel"],last_available_stock) if restock.is_restocked(current_stock_qty, store_stock["stockInfo"]["stockLevel"], last_available_stock) else current_stock.restock_qty,
+                        'restock_date' : date.today() if restock.is_restocked(current_stock_qty, store_stock["stockInfo"]["stockLevel"], last_available_stock) else current_stock.restock_date,
+                        'out_of_stock_date' : None,
+                        'complete_restock_date' : current_stock.complete_restock_date if current_stock else restock_date
+                        }
+                    )
+                    
+                    daily_sales = sales.get_daily_beer_sale(
+                        beer,
+                        store, 
+                        current_stock_qty, 
+                        obj.product_stock,
+                        last_available_stock
+                    )
+                    
+                    sale_obj, created = DailySale.objects.update_or_create(
+                        beer_id = beer,
+                        store_id = store,
+                        sales_day = date.today(),
+                        defaults={
+                        'beers_sold': daily_sales
+                        }
+                    )
+
+                    # All beers that are restocked, and have been out of stock (current stock=0), for a store will be added to notification "restock"
+                    # Also beers that are restocked while store stock is falsly set to 0 will be emailed as restocked
+                    if restock.is_restocked(current_stock_qty, store_stock["stockInfo"]["stockLevel"], last_available_stock) and current_stock_qty == 0:
+                        notify_restock.setdefault(store,[]).append(beer)
+
+                        # Update date when stock was completely re-stocked for given beer
+                        obj, created = BeerStock.objects.update_or_create(
+                        beer_id = beer,
+                        store_id = store,
+                        defaults={
+                            'complete_restock_date' : date.today(),
+                        }
+                    )
+
+                    self.stdout.write(f"Updated {obj.beer_id.name}, stock: {obj.product_stock}, sales: {sale_obj.beers_sold}, store: {store}")
         
         
         # Send email notification for Beers that are restocked
