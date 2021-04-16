@@ -18,7 +18,7 @@ def store_beers(request, store_id):
     Paginated in order to use infinite scroll
     '''
     
-    queryset = Beer.objects.filter(beerstock__product_stock__gt=0).filter(beerstock__store_id=store_id).order_by(F('untappd__rating').desc(nulls_last=True))
+    queryset = Beer.objects.filter(beerstock__product_stock__gt=0, beerstock__store_id=store_id).order_by(F('untappd__rating').desc(nulls_last=True))
     
     if request.user.is_authenticated:
         
@@ -43,7 +43,7 @@ def beer_stock_search(request, store_id):
     # Check if query is empty
     if request.POST["query"] != '':
         # Fetch all Beers in stock at store 
-        queryset = Beer.objects.filter(beerstock__product_stock__gt=0).filter(beerstock__store_id=store_id).order_by(F('untappd__rating').desc(nulls_last=True))
+        queryset = Beer.objects.filter(beerstock__product_stock__gt=0, beerstock__store_id=store_id).order_by(F('untappd__rating').desc(nulls_last=True))
         # Find beers that match 'query' by name or brewery 
         queryset = queryset.filter(Q(name__icontains=request.POST["query"]) | Q(brewery__icontains=request.POST["query"]))
         
