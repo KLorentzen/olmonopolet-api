@@ -149,10 +149,10 @@
 {% endwith %}
 {% endfor %}
 
-{% if beers.has_next%}
+{% if beerstock.has_next%}
     {% comment %} Only paginate if Full stock is listed {% endcomment %}
     {% if full_store_stock %}
-        <div class="" hx-get="{% url 'store_beers' store_id %}?page={{ beers.next_page_number }}" hx-trigger="revealed" hx-swap="outerHTML" hx-indicator=".htmx-indicator"></div>
+        <div class="" hx-get="{% url 'store_beers' store_id %}?page={{ beerstock.next_page_number }}" hx-trigger="revealed" hx-swap="outerHTML" hx-indicator=".htmx-indicator"></div>
     {% endif %}
 {% endif %}
 
