@@ -1,9 +1,9 @@
 {% load i18n %}
 
 {% comment %} Beer cards {% endcomment %}
-{% for beer in beers %}
-{% with beer.untappd as untappd %}
-{% with beer.beerstock.all|first as stock %}
+{% for stock in beerstock %}
+{% with stock.beer_id as beer %}
+{% with stock.beer_id.untappd as untappd %}
     <div class="rounded-md border shadow border-gray-700 overflow-hidden">
 
         <div class="flex justify-between py-2">
@@ -78,11 +78,11 @@
                             </div>
                             
                             {% comment %} User Rating from 1st Check-In {% endcomment %}
-                            {% if beer.untappd_rating %}
+                            {% if stock.untappd_rating %}
                                 <div class="flex items-center mr-2">
                                     <i class="fas fa-user"></i>
                                     <i class="fab fa-untappd text-yellow-400 mr-1 -ml-1 -mt-2 text-xs transform scale-75"></i>
-                                    <div class=""> {{ beer.untappd_rating|floatformat:"-2" }} </div>
+                                    <div class=""> {{ stock.untappd_rating|floatformat:"-2" }} </div>
                                 </div>
                             {% endif %}
                         </div>
@@ -94,7 +94,7 @@
             <div class="flex flex-none justify-between flex-col ml-2 mr-5">
                 
                 {% comment %} Check in Status{% endcomment %}
-                {% if beer.untappd_rating %}
+                {% if stock.untappd_rating %}
                     <div class="flex mx-auto h-8 -mt-5 -mr-12 z-0 text-xs">
                         <div class="mt-4 -mr-8 transform scale-75 z-10 text-gray-100">
                             <i class="fas fa-user-check"> </i>
@@ -161,4 +161,11 @@
         // Scroll to top when a search is performed
         scrollTo(0,0);
     </script>
+
+    {% if not beerstock %}
+    <!-- Show message if no beers match query from search-->
+        <div class="flex mx-auto justify-between col-span-2 text-lg">
+            <div class="italic">Ingen treff for: "{{ query }}"</div>
+        </div>
+    {% endif %}
 {% endif %}

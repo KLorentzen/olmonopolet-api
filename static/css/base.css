@@ -1288,6 +1288,10 @@ video {
   grid-template-columns: repeat(1, minmax(0, 1fr));
 }
 
+.col-span-2 {
+  grid-column: span 2 / span 2;
+}
+
 .transform {
   --tw-translate-x: 0;
   --tw-translate-y: 0;
