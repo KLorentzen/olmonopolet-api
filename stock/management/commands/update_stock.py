@@ -37,8 +37,6 @@ class Command(BaseCommand):
         start_time = datetime.now()
         self.stdout.write(f"Updating product stock @ {datetime.now()}")
 
-        # Dictionary with key="store_id" and values are list of beers that are restocked and should be notified per email
-        notify_restock = {}
 
         if options['watchlist']:
             # Retrieve beers in WatchList model
@@ -48,12 +46,17 @@ class Command(BaseCommand):
             beers = Beer.objects.filter(watchlist = None)
 
         # Retrieve all active Vinmonopolet Stores
-        active_stores = Store.objects.filter(active=True).order_by('category')
+        active_stores = Store.objects.filter(active=True).order_by('-category')
 
-        for beer in beers:
 
-            # Update Stock for all Active Stores
-            for store in active_stores:
+        # Update Stock for all Active Stores
+        for store in active_stores:
+            self.stdout.write(f"Updating stock for store: {store}")
+            
+            # Dictionary with key="store_id" and values are list of beers that are restocked and should be notified per email
+            notify_restock = {}
+
+            for beer in beers:
 
                 # Has Beer been in stock at Vinmonopolet Store - retrieve BeerStock instance
                 try:
@@ -151,11 +154,12 @@ class Command(BaseCommand):
                     if restock.is_restocked(current_stock_qty, store_stock["stockInfo"]["stockLevel"], last_available_stock) and current_stock_qty == 0:
                         notify_restock.setdefault(store,[]).append(beer)
 
-                        # Update date when stock was completely re-stocked for given beer
+                        # Update date and restock quantity when stock was completely re-stocked for given beer
                         obj, created = BeerStock.objects.update_or_create(
                         beer_id = beer,
                         store_id = store,
                         defaults={
+                            'restock_qty' : store_stock["stockInfo"]["stockLevel"],
                             'complete_restock_date' : date.today(),
                         }
                     )
@@ -163,12 +167,12 @@ class Command(BaseCommand):
                     self.stdout.write(f"Updated {obj.beer_id.name}, stock: {obj.product_stock}, sales: {sale_obj.beers_sold}, store: {store}")
         
         
-        # Send email notification for Beers that are restocked
-        if len(notify_restock) > 0:
-            notification.send_restock_email(notify_restock)
+            # Send email notification for Beers that are restocked
+            if len(notify_restock) > 0:
+                notification.send_restock_email(notify_restock)
+                self.stdout.write(f"notification: {notify_restock}")
 
         end_time = datetime.now()
         self.stdout.write(f"Product stock update took {end_time - start_time} seconds")
 
-        self.stdout.write(f"notification: {notify_restock}")
         return
