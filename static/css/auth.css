@@ -1,3 +1,4 @@
-input {
+span>input {
     outline: none;
+    width: 100%;
 }

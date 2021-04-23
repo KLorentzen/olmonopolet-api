@@ -1,5 +1,7 @@
 from django.urls import path
+from .views import login_redirect
 
 urlpatterns = [
-    # Enter URLconf
+    path('login-redirect/', login_redirect, name='login_redirect'),
+
 ]

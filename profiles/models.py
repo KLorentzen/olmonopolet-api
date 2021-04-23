@@ -1,5 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import User
+from stores.models import Store
 
 # Create your models here.
 class Profile(models.Model):
@@ -8,6 +9,7 @@ class Profile(models.Model):
     Automatically added from signal when User is created.
     '''
     user = models.OneToOneField(User, verbose_name='User',related_name='profiles',on_delete=models.CASCADE)
+    store = models.ForeignKey(Store, verbose_name='Store', related_name='profile_stores', on_delete=models.CASCADE, blank=True, null=True)
     premium = models.BooleanField(help_text='Is user premium?', default=False)
 
     # Untappd Fields

@@ -35,7 +35,7 @@
 
         {% comment %} Jumbotron {% endcomment %}
         <div class="flex flex-col justify-center p-2">
-            <div class="flex justify-center my-8">
+            <div class="flex justify-center my-4">
                 <div class="flex flex-col">
                     <div>
                         <h1 class="uppercase tracking-wider font-semibold text-center text-3xl md:text-5xl">Ølmonopolet</h1>
@@ -48,6 +48,13 @@
                     </div>
                 </div>
             </div>
+
+            {% comment %} Login button {% endcomment %}
+            {% if not user.is_authenticated %}
+                <div class="mx-auto text-lg px-2 mb-4 rounded-md hover:bg-gray-200 border hover:text-gray-700">
+                    <a href="{% url 'login' %}" class="outline-none">Logg inn</a>
+                </div>
+            {% endif %} 
 
             {% comment %} Store Search Bar {% endcomment %}
             <div class="flex justify-center h-10">
