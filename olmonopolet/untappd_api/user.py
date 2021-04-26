@@ -54,7 +54,7 @@ def get_user_beers(username, offset=0):
         response = httpx.get(URL, headers=HEADERS, params=PARAMS)
 
         beer_info = response.json()
-        ratelimit_remaining = response.headers['X-Ratelimit-Remaining']
+        ratelimit_remaining = int(response.headers['X-Ratelimit-Remaining'])
 
     except Exception as err:
         beer_info = None
@@ -110,7 +110,7 @@ def sync_untappd(app_user):
         )
 
         # Syncronize Untappd Check-Ins
-        while untappd_page < total_pages and int(requests_remaining) > 1:
+        while untappd_page < total_pages and requests_remaining > 0:
 
             untappd_check_ins, requests_remaining = get_user_beers(untappd_username, untappd_page * 50)
             untappd_check_ins = untappd_check_ins['response']
@@ -133,6 +133,10 @@ def sync_untappd(app_user):
                     pass
 
             untappd_page += 1
+
+            # If Ratelimit is reached a syncronization is not complete
+            if requests_remaining == 0:
+                sync_status = False
 
     except Exception as err:
         sync_status = False
