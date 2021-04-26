@@ -1,4 +1,5 @@
-import os, httpx
+import os, httpx 
+from datetime import datetime
 from profiles.models import Profile
 from untappd.models import UserCheckIn
 from beers.models import Beer
@@ -135,5 +136,14 @@ def sync_untappd(app_user):
 
     except Exception as err:
         sync_status = False
+
+
+    if sync_status:
+        profile, created = Profile.objects.update_or_create(
+            user = app_user,
+            defaults = {
+                'untappd_sync_date': datetime.now()
+            }
+        )
 
     return synced_check_ins, sync_status, requests_remaining 
