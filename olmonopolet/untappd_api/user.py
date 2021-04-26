@@ -24,7 +24,7 @@ def get_user_info(username):
         response = httpx.get(URL, headers=HEADERS, params=PARAMS)
 
         user_info = response.json()
-        ratelimit_remaining = response.headers['X-Ratelimit-Remaining']
+        ratelimit_remaining = int(response.headers['X-Ratelimit-Remaining'])
 
     except Exception as err:
         user_info = None
