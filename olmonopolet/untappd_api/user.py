@@ -1,5 +1,5 @@
 import os, httpx 
-from datetime import datetime
+from django.utils import timezone
 from profiles.models import Profile
 from untappd.models import UserCheckIn
 from beers.models import Beer
@@ -142,7 +142,7 @@ def sync_untappd(app_user):
         profile, created = Profile.objects.update_or_create(
             user = app_user,
             defaults = {
-                'untappd_sync_date': datetime.now()
+                'untappd_sync_date': timezone.now()
             }
         )
 
