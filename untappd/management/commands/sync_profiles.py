@@ -13,8 +13,8 @@ class Command(BaseCommand):
 
     def handle(self, *args, **options):
 
-        # Get all Profiles who have set their Untappd Username ordered by last Untappd synced profile
-        user_profiles = Profile.objects.filter(Q(untappd_username__isnull=False)).order_by(F('untappd_sync_date').asc(nulls_first=True))
+        # Get all Profiles who have set their Untappd Username(UT Username='' as default) ordered by last Untappd synced profile
+        user_profiles = Profile.objects.exclude(Q(untappd_username='')).order_by(F('untappd_sync_date').asc(nulls_first=True))
         
         self.stdout.write(f"Updating Untappd User Check-Ins @ {datetime.now()}")
 
