@@ -108,6 +108,11 @@
         {% endfor %}
     {% endfor %}
 
+    {% comment %} Pagination {% endcomment %}
+    {% if beers.has_next%}
+        <div class="" hx-get="{% url 'beer_release' %}?page={{ beers.next_page_number }}" hx-trigger="revealed" hx-swap="outerHTML" hx-indicator=".htmx-indicator"></div>
+    {% endif %}
+
 {% else %}
     <div class="text-xl italic font-light">
         Fant ingen øl på noverande tidspunkt.
