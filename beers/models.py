@@ -37,6 +37,7 @@ class Beer(models.Model):
     launch_date = models.DateField(help_text='Date when beer was launched', null=True, blank=True)
     
     added_date = models.DateField(auto_now=False, auto_now_add=True)
+    last_updated = models.DateTimeField(auto_now=True)
 
     class Meta:
         ordering = ['-launch_date', "-added_date"]
