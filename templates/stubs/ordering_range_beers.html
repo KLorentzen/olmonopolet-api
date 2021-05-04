@@ -1,0 +1,136 @@
+{% load i18n %}
+
+{% comment %} Beer cards {% endcomment %}
+{% for beer in beers %}
+{% with beer.untappd as untappd %}
+    <div class="rounded-md border shadow border-gray-700 overflow-hidden">
+
+        <div class="flex justify-between py-2">
+
+            {% comment %} Beer name and details {% endcomment %}
+            <div class="flex flex-col mx-2 text-sm font-light">
+                <div class="text-base font-bold">
+                    <a href="{{ beer.url }}" target="_blank">{{beer.name}}</a>
+                </div>
+                <div>{{ beer.brewery }}</div>
+
+                <div>{% if untappd.style %} {{ untappd.style }} {% else %} {{ beer.style }} {% endif %}</div>
+
+                {% comment %} Beer Detail Section {% endcomment %}
+                <div class="flex flex-col border-t border-0 border-gray-500 my-1 pt-1">
+                    
+                    {% comment %} Beer Selection {% endcomment %}
+                    <div class="italic">
+                        {% translate beer.selection %}
+                    </div>
+                    
+                    {% comment %} Vinmonopolet Detail Section {% endcomment %}
+                    <div class="flex flex-wrap">
+                        {% comment %} Beer Price {% endcomment %}
+                        <div class="flex items-center mr-2">
+                            <i class="fas fa-money-bill-wave text-green-500 mr-1"></i>
+                            <div class=""> {{ beer.price }}kr </div>
+                        </div>
+
+                        {% comment %} Beer Alcohol Volume {% endcomment %}
+                        <div class="flex items-center mr-2">
+                            <i class="fas fa-percent fa-xs mr-1"></i>
+                            <div class="">{{ beer.alc_volume }}</div>
+                        </div>
+
+                        {% comment %} Beer Volume {% endcomment %}
+                        <div class="flex items-center mr-2">
+                            <i class="fas fa-glass-whiskey text-gray-700 mr-1"></i>
+                            <div class="">{{ beer.volume }}L</div>
+                        </div>
+
+                    </div>
+
+                    {% comment %} Untappd Detail Section {% endcomment %}
+                    {% if untappd %}
+                        <div class="flex">
+
+                            {% comment %} Untappd Rating {% endcomment %}
+                            <a href="{{ untappd.url }}" target="_blank">
+                                <div class="flex items-center mr-2">
+                                    <i class="fab fa-untappd text-yellow-400 mr-1"></i>
+                                    <div class=""> {{ untappd.rating|floatformat:3 }} </div>
+                                </div>
+                            </a>
+
+                            {% comment %} Untappd Number of Ratings {% endcomment %}
+                            <div class="flex items-center mr-2">
+                                <i class="fas fa-users mr-1"></i>
+                                <div class=""> {{ untappd.num_ratings }} </div>
+                            </div>
+                            
+                            {% comment %} User Rating from 1st Check-In {% endcomment %}
+                            {% if stock.untappd_rating %}
+                                <div class="flex items-center mr-2">
+                                    <i class="fas fa-user"></i>
+                                    <i class="fab fa-untappd text-yellow-400 mr-1 -ml-1 -mt-2 text-xs transform scale-75"></i>
+                                    <div class=""> {{ stock.untappd_rating|floatformat:"-2" }} </div>
+                                </div>
+                            {% endif %}
+                        </div>
+                    {% endif %}
+
+                </div>
+            </div>
+
+            <div class="flex flex-none justify-between flex-col ml-2 mr-5">
+                
+                {% comment %} Check in Status{% endcomment %}
+                {% if stock.untappd_rating %}
+                    <div class="flex mx-auto h-8 -mt-5 -mr-12 z-0 text-xs">
+                        <div class="mt-4 -mr-8 transform scale-75 z-10 text-gray-100">
+                            <i class="fas fa-user-check"> </i>
+                        </div>
+                        <div class="transform rotate-45 w-16 h-10 font-light bg-green-500 "></div>
+                    </div>
+                {% endif %}
+
+                {% comment %} Special Icons {% endcomment %}
+                <div class="flex justify-between fa-lg">
+                        
+
+                </div>
+
+                {% comment %} Beer Image {% endcomment %}
+                <div class="flex-none place-self-center">
+                    {% if untappd %}
+                        <a href="{{ untappd.url }}" target="_blank">
+                            <img class="w-20 md:w-24 h-20 md:h-24 object-scale-down" src="{{ beer.get_image_url }}" alt="">
+                        </a>
+                    {% else %}
+                        <img class="w-20 md:w-24 h-20 md:h-24 object-scale-down" src="{{ beer.get_image_url }}" alt="">
+                    {% endif %}
+                </div>
+
+            </div>
+        </div>
+
+    </div>
+{% endwith %}
+{% endfor %}
+
+{% if beers.has_next%}
+    {% comment %} Only paginate if all beers in 'Bestillingsutvalet' are listed {% endcomment %}
+    {% if full_selection %}
+        <div class="" hx-get="{% url 'ordering_range_beers' %}?page={{ beers.next_page_number }}" hx-trigger="revealed" hx-swap="outerHTML" hx-indicator=".htmx-indicator"></div>
+    {% endif %}
+{% endif %}
+
+{% if search %}
+    <script>
+        // Scroll to top when a search is performed
+        scrollTo(0,0);
+    </script>
+
+    {% if not beers %}
+    <!-- Show message if no beers match query from search-->
+        <div class="flex mx-auto justify-between col-span-2 text-lg">
+            <div class="italic">Ingen treff for: "{{ query }}"</div>
+        </div>
+    {% endif %}
+{% endif %}

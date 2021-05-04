@@ -87,6 +87,10 @@
                     </div>
                     <div class="px-4 py-1 rounded-lg  hover:bg-gray-100">
                         <i class="w-6 fas fa-shipping-fast"></i>
+                        <a class="focus:outline-none px-2" href="{% url 'ordering_range' store_id %}">Bestillingsutvalet</a>
+                    </div>
+                    <div class="px-4 py-1 rounded-lg  hover:bg-gray-100">
+                        <i class="w-6 fas fa-bullhorn"></i>
                         <a class="focus:outline-none px-2" href="{% url 'release_overview' store_id %}">Ølslepp</a>
                     </div>
                     <div class="px-4 py-1 rounded-lg  hover:bg-gray-100">
@@ -206,8 +210,14 @@
                             </a>
                         </div>
                         <div class="my-2 transform ease-in duration-100 hover:scale-110 hover:text-gray-700">
-                            <a href="{% url 'release_overview' store_id %}">
+                            <a href="{% url 'ordering_range' store_id %}">
                                 <i class="fas fa-shipping-fast"></i>
+                                <span class="">Bestillingsutvalet</span>
+                            </a>
+                        </div>
+                        <div class="my-2 transform ease-in duration-100 hover:scale-110 hover:text-gray-700">
+                            <a href="{% url 'release_overview' store_id %}">
+                                <i class="fas fa-bullhorn"></i>
                                 <span class="">Ølslepp</span>
                             </a>
                         </div>
