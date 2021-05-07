@@ -62,6 +62,36 @@ def get_user_beers(username, offset=0):
 
     return beer_info, ratelimit_remaining
 
+def get_user_wishlist(username, offset=0):
+    '''Retrieve all beers in Wishlist for Untappd username.  
+
+    Parameters:  
+    arg1 str: Untappd username  
+      
+    Returns:  
+    dict: JSON respons containing user Wishlist information from Untappd  
+    int: remaining requests in current hour
+    '''
+
+    URL = f"https://api.untappd.com/v4/user/wishlist/{username}"
+    HEADERS = {"user-agent": f'Olmonopolet App({os.environ.get("UNTAPPD_CLIENT_ID")})' }
+    PARAMS = {"client_id": os.environ.get('UNTAPPD_CLIENT_ID'),
+              "client_secret": os.environ.get('UNTAPPD_CLIENT_SECRET'),
+              "limit": 50,
+              "offset": offset}
+
+    try:
+        response = httpx.get(URL, headers=HEADERS, params=PARAMS)
+
+        untappd_wishlist = response.json()
+        ratelimit_remaining = int(response.headers['X-Ratelimit-Remaining'])
+
+    except Exception as err:
+        untappd_wishlist = None
+        ratelimit_remaining = 0
+
+    return untappd_wishlist, ratelimit_remaining
+
 def sync_untappd(app_user):
     '''Syncronize Untappd check-ins for an Ølmonopolet User.  
 
