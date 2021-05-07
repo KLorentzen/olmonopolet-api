@@ -93,13 +93,22 @@
 
             <div class="flex flex-none justify-between flex-col ml-2 mr-5">
                 
-                {% comment %} Check in Status{% endcomment %}
+                <!-- User Rating from 1st Check-In -->
                 {% if stock.untappd_rating %}
                     <div class="flex mx-auto h-8 -mt-5 -mr-12 z-0 text-xs">
                         <div class="mt-4 -mr-8 transform scale-75 z-10 text-gray-100">
                             <i class="fas fa-user-check"> </i>
                         </div>
                         <div class="transform rotate-45 w-16 h-10 font-light bg-green-500 "></div>
+                    </div>
+                
+                <!-- Untappd Wish List -->
+                {% elif stock.untappd_wishlist %}
+                    <div class="flex mx-auto h-8 -mt-5 -mr-12 z-0 text-xs">
+                        <div class="mt-4 -mr-7 z-10 text-gray-100">
+                            <i class="fas fa-clipboard-list"></i>
+                        </div>
+                        <div class="transform rotate-45 w-16 h-10 font-light bg-purple-500 "></div>
                     </div>
                 {% endif %}
 

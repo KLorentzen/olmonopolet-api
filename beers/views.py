@@ -2,7 +2,7 @@ from django.core.paginator import Paginator
 from django.shortcuts import render, redirect
 from .models import Beer
 from stores.models import Store
-from untappd.models import UserCheckIn
+from untappd.models import UserCheckIn, UserWishList
 from django.db.models import F, Q, Max, OuterRef, Subquery
 from .serializers import BeerSerializer
 from rest_framework import generics
@@ -38,6 +38,10 @@ def ordering_range_beers(request):
         # This subquery returns the rating of any beers the User has checked in to Untappd
         check_in_subquery = UserCheckIn.objects.filter(beer_id = OuterRef('beer_id'), user_id=request.user)
         queryset = queryset.annotate(untappd_rating=Subquery(check_in_subquery.values('rating')[:1]))
+
+        # This subquery returns a value if User has the Beer in Wish List on Untappd
+        wishlist_subquery = UserWishList.objects.filter(beer_id = OuterRef('beer_id'), user_id=request.user)
+        queryset = queryset.annotate(untappd_wishlist=Subquery(wishlist_subquery.values('user')[:1]))
 
     paginator = Paginator(queryset, 50, 0)
 

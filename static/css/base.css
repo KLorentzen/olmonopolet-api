@@ -628,6 +628,11 @@ video {
   background-color: rgba(16, 185, 129, var(--tw-bg-opacity));
 }
 
+.bg-purple-500 {
+  --tw-bg-opacity: 1;
+  background-color: rgba(139, 92, 246, var(--tw-bg-opacity));
+}
+
 .hover\:bg-gray-100:hover {
   --tw-bg-opacity: 1;
   background-color: rgba(243, 244, 246, var(--tw-bg-opacity));
@@ -1019,6 +1024,10 @@ video {
 
 .-mt-6 {
   margin-top: -1.5rem;
+}
+
+.-mr-7 {
+  margin-right: -1.75rem;
 }
 
 .-mr-8 {

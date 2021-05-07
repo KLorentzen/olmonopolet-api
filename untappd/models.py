@@ -61,9 +61,30 @@ class UserCheckIn(models.Model):
     beer_id = models.ForeignKey(Beer, verbose_name='Beers', related_name='beer_check_ins', on_delete=models.CASCADE)
     rating = models.FloatField(help_text="Untappd rating by user from first check-in", default=0)
 
+    last_updated = models.DateTimeField(auto_now=True)
+    created = models.DateField(auto_now_add=True)
+
     class Meta:
         verbose_name = 'User Check-In'
         verbose_name_plural = 'User Check-Ins'
+
+    def __str__(self):
+        # Return the name of the beer_id based on relationship
+        return self.beer_id.name
+
+class UserWishList(models.Model):
+    '''
+    Beers in a User's Untappd Wishlist  
+    '''
+    user = models.ForeignKey(User, verbose_name='Users', related_name='user_wish_list', on_delete=models.CASCADE)
+    beer_id = models.ForeignKey(Beer, verbose_name='Beers', related_name='beer_wish_list', on_delete=models.CASCADE)
+
+    last_updated = models.DateTimeField(auto_now=True)
+    created = models.DateField(auto_now_add=True)
+
+    class Meta:
+        verbose_name = 'User Wish List'
+        verbose_name_plural = 'User Wish List'
 
     def __str__(self):
         # Return the name of the beer_id based on relationship
