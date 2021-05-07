@@ -19,10 +19,10 @@ class Command(BaseCommand):
         self.stdout.write(f"Updating Untappd User Check-Ins @ {datetime.now()}")
 
         for profile in user_profiles:
-            beers_syncronized, sync_status, remaining_requests = untappd_user.sync_untappd(profile.user)
+            beers_syncronized, wishlist_beers_syncronized, sync_status, remaining_requests = untappd_user.sync_untappd(profile.user)
 
             if sync_status:
-                self.stdout.write(f"Syncronized Untappd for {profile.user}, {len(beers_syncronized)} check-ins to Untappd were added.")
+                self.stdout.write(f"Syncronized Untappd for {profile.user}, {len(beers_syncronized)} check-ins to Untappd were added. {len(wishlist_beers_syncronized)} beers were added from Wish List.")
                 self.stdout.write(f"Remaining requests: {remaining_requests}.")
             else:
                 self.stdout.write(f"Maximum number of requests towards Untappd performed.")

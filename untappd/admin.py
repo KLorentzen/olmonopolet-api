@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Untappd, UntappdMapping, UserCheckIn
+from .models import Untappd, UntappdMapping, UserCheckIn, UserWishList
 
 # Register your models here.
 
@@ -23,11 +23,18 @@ class UntappdMappingAdmin(admin.ModelAdmin):
 class UserCheckInAdmin(admin.ModelAdmin):
     list_display = ('user',
                     'beer_id',
-                    'rating')
+                    'rating',
+                    'last_updated')
     search_fields = ('beer_id__name', )
     
+class UserWishListAdmin(admin.ModelAdmin):
+    list_display = ('user',
+                    'beer_id',
+                    'last_updated')
+    search_fields = ('beer_id__name', )
 
 
 admin.site.register(Untappd, UntappdAdmin)
 admin.site.register(UntappdMapping, UntappdMappingAdmin)
 admin.site.register(UserCheckIn, UserCheckInAdmin)
+admin.site.register(UserWishList, UserWishListAdmin)

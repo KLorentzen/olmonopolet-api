@@ -8,7 +8,7 @@ from stores.models import Store
 from .serializers import BeerStockSerializer
 from django.views.generic import TemplateView
 from datetime import datetime, timedelta
-from untappd.models import UserCheckIn
+from untappd.models import UserCheckIn, UserWishList
 
 
 # View Functions
@@ -25,6 +25,10 @@ def store_beers(request, store_id):
         # This subquery returns the rating of any beers the User has checked in to Untappd
         check_in_subquery = UserCheckIn.objects.filter(beer_id = OuterRef('beer_id'), user_id=request.user)
         queryset = queryset.annotate(untappd_rating=Subquery(check_in_subquery.values('rating')[:1]))
+        
+        # This subquery returns a value if User has the Beer in Wish List on Untappd
+        wishlist_subquery = UserWishList.objects.filter(beer_id = OuterRef('beer_id'), user_id=request.user)
+        queryset = queryset.annotate(untappd_wishlist=Subquery(wishlist_subquery.values('user')[:1]))
 
     paginator = Paginator(queryset, 50, 0)
 
@@ -52,6 +56,10 @@ def beer_stock_search(request, store_id):
             check_in_subquery = UserCheckIn.objects.filter(beer_id = OuterRef('beer_id'),user_id=request.user)
             queryset = queryset.annotate(untappd_rating=Subquery(check_in_subquery.values('rating')[:1]))
 
+            # This subquery returns a value if User has the Beer in Wish List on Untappd
+            wishlist_subquery = UserWishList.objects.filter(beer_id = OuterRef('beer_id'), user_id=request.user)
+            queryset = queryset.annotate(untappd_wishlist=Subquery(wishlist_subquery.values('user')[:1]))
+
     else:
         # Returns all beers in stock if query string is empty ('')
         return redirect('store_beers', store_id)
@@ -69,6 +77,9 @@ def stock_change_in(request, store_id):
         check_in_subquery = UserCheckIn.objects.filter(beer_id = OuterRef('beer_id'),user_id=request.user)
         queryset = queryset.annotate(untappd_rating=Subquery(check_in_subquery.values('rating')[:1]))
 
+        # This subquery returns a value if User has the Beer in Wish List on Untappd
+        wishlist_subquery = UserWishList.objects.filter(beer_id = OuterRef('beer_id'), user_id=request.user)
+        queryset = queryset.annotate(untappd_wishlist=Subquery(wishlist_subquery.values('user')[:1]))
 
     paginator = Paginator(queryset, 75, 0)
 
@@ -88,6 +99,10 @@ def stock_change_out(request, store_id):
         # This subquery returns the rating of any beers the User has checked in to Untappd
         check_in_subquery = UserCheckIn.objects.filter(beer_id = OuterRef('beer_id'),user_id=request.user)
         queryset = queryset.annotate(untappd_rating=Subquery(check_in_subquery.values('rating')[:1]))
+
+        # This subquery returns a value if User has the Beer in Wish List on Untappd
+        wishlist_subquery = UserWishList.objects.filter(beer_id = OuterRef('beer_id'), user_id=request.user)
+        queryset = queryset.annotate(untappd_wishlist=Subquery(wishlist_subquery.values('user')[:1]))
         
     paginator = Paginator(queryset, 75, 0)
 
