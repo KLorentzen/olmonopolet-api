@@ -1,7 +1,7 @@
 import os, httpx 
 from django.utils import timezone
 from profiles.models import Profile
-from untappd.models import UserCheckIn
+from untappd.models import UserCheckIn, UserWishList
 from beers.models import Beer
 
 def get_user_info(username):
@@ -99,17 +99,22 @@ def sync_untappd(app_user):
     arg1 User: instance of User model 
       
     Returns:  
-    list: All beers that are synced from Untappd  
+    list: All beers that are synced from Untappd as check-ins  
+    list: All beers in Wish List synced from Untappd  
     bool: syncronization status [True/False]  
     int: remaining requests in current hour based on Untappd Rate Limiting  
     '''
 
     # Untappd API has rateLimit=100
     MAX_REQUESTS = 100
+    PAGE_SIZE = 50
     requests_remaining = MAX_REQUESTS
     untappd_page = 0
+    wishlist_page = 0
+    wishlist_has_next_page = True
 
     synced_check_ins = []
+    synced_wishlist_items = []
     user_check_ins = 0
 
     # True if all user was syncronized successfully
@@ -125,7 +130,7 @@ def sync_untappd(app_user):
         
         # Set number of requests to be made to Untappd in order to retrieve all check-ins
         # 50 beers per page/request
-        quotient, remainder  = divmod(user_check_ins, 50) 
+        quotient, remainder  = divmod(int(user_check_ins), PAGE_SIZE) 
         if remainder != 0:
             total_pages = quotient + 1
         else:
@@ -140,9 +145,9 @@ def sync_untappd(app_user):
         )
 
         # Syncronize Untappd Check-Ins
-        while untappd_page < total_pages and requests_remaining > 0:
+        while untappd_page < total_pages and sync_status:
 
-            untappd_check_ins, requests_remaining = get_user_beers(untappd_username, untappd_page * 50)
+            untappd_check_ins, requests_remaining = get_user_beers(untappd_username, untappd_page * PAGE_SIZE)
             untappd_check_ins = untappd_check_ins['response']
 
             for beer in untappd_check_ins['beers']['items']:
@@ -168,6 +173,44 @@ def sync_untappd(app_user):
             if requests_remaining == 0:
                 sync_status = False
 
+        # Syncronize Untappd Wishlist
+        # Items in UserWishList not existing in WishList on Untappd will be deleted
+        current_wishlist = UserWishList.objects.filter(user=app_user)
+
+        while wishlist_has_next_page and sync_status:
+            
+            untappd_wishlist, requests_remaining = get_user_wishlist(untappd_username, wishlist_page * PAGE_SIZE)
+            
+            # If wishlist has less than maximum page items there are no further pages to request
+            if len(untappd_wishlist['response']['beers']['items']) < 50:
+                wishlist_has_next_page = False
+            else:
+                wishlist_page += 1
+
+            for beer in untappd_wishlist['response']['beers']['items']:
+                try:
+                    # Iterate in case there are multiple Beers mapped to the same Untappd beer ID
+                    # Example: Same beer but different size, 0,33L + 0,5L
+                    for beer_mapping in Beer.objects.filter(mappings__untappd_id=beer['beer']['bid']):
+                        wishlist_obj, created = UserWishList.objects.get_or_create(
+                                beer_id = beer_mapping,
+                                user = app_user
+                            )
+                        
+                        # Items in WishList on Untappd are not to be deleted
+                        current_wishlist = current_wishlist.exclude(beer_id=beer_mapping)
+                        
+                        if created:
+                            synced_wishlist_items.append(wishlist_obj)
+                        
+                except Exception as err:
+                    # Exception occurs when user has checked in a Beer on Untappd that is not available on Vinmonopolet
+                    pass
+
+            # If Ratelimit is reached a syncronization is not complete
+            if requests_remaining == 0:
+                sync_status = False
+
     except Exception as err:
         sync_status = False
 
@@ -180,4 +223,7 @@ def sync_untappd(app_user):
             }
         )
 
-    return synced_check_ins, sync_status, requests_remaining 
+        # Delete any WishList item in DB that does not currently exist in WishList on Untappd
+        current_wishlist.delete()
+
+    return synced_check_ins, synced_wishlist_items, sync_status, requests_remaining 
