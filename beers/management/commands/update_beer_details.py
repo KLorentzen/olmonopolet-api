@@ -3,7 +3,7 @@ from beers.models import Product, Beer
 from olmonopolet.vmp_api import products as vmp_api_products 
 from olmonopolet.vmp_api import utilities as vmp_utils  
 from datetime import datetime
-
+import httpx
 
 class Command(BaseCommand):
     help = '''
@@ -16,19 +16,19 @@ class Command(BaseCommand):
         self.stdout.write(f"Updating Beer details @ {datetime.now()}")
         start_time = datetime.now()
         
+        # Instantiate httpx Client
+        with httpx.Client() as client:
+
         # Verify that VMP is online before using the VMP api
-        if not vmp_utils.isVMPonline:
+            if not vmp_utils.isVMPonline(client):
             self.stdout.write(f"Vinmonopolet is not available...")
             return
-
-        # Obtain session ID from VMP
-        vmp_session_cookie = vmp_utils.get_VMP_cookies()
 
         beers = Beer.objects.all()
 
         for beer in beers:
             # Update Beer details from Vinmonopolet
-            beer_details = vmp_api_products.get_product_details(beer.pk, vmp_session_cookie)
+                beer_details = vmp_api_products.get_product_details(client, beer.pk)
             
             # TODO: Add functionality to notify user if beer with stock becomes "buyable:True"
 

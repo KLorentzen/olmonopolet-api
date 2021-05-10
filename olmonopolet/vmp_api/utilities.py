@@ -1,22 +1,25 @@
 import httpx
 
 
-def isVMPonline():
+def isVMPonline(client):
     '''
     Check if vinmonopolet is available for queries.  
     On days with product releases at Vinmonopolet you will be redirected to a queue, hence it will not be possible to fetch data.  
     
     Arguments:  
-    none  
+    arg1 obj: httpx Client instance  
       
     Returns:  
     bool: Vinmonopolet availability
     '''
 
     URL = "https://www.vinmonopolet.no/"
+    HEADERS = {
+        'user-agent' : 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_16_0)'
+    }
 
     try:
-        response = httpx.get(URL, allow_redirects=False)
+        response = client.get(URL, headers=HEADERS, allow_redirects=False)
         if response.status_code != 200:
             return False
         else:
@@ -26,6 +29,7 @@ def isVMPonline():
 
 def get_VMP_cookies():
     '''
+    !!!!DEPRECATED!!!!
     Query Vinmonopolet in order to initialise cookies from the site. 
     Such cookies are required when requesting resources from certain VMP endpoints.  
 
@@ -33,9 +37,12 @@ def get_VMP_cookies():
     httpx.cookie instance
     '''
     URL = "https://www.vinmonopolet.no/"
+    HEADERS = {
+        'user-agent' : 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_16_0)'
+    }
 
     try:
-        vmp = httpx.get(URL)
+        vmp = httpx.get(URL, headers=HEADERS)
 
         return vmp.cookies
     except Exception as err:

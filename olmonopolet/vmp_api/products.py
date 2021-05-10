@@ -1,7 +1,9 @@
 import os, httpx
 
 def get_all_products():
-    '''Retrieve all products that are currently in stock by Vinmonopolet. Uses "products/GET accumulated-stock" API endpoint from VMP.
+    '''
+    !!!!DEPRECATED!!!!
+    Retrieve all products that are currently in stock by Vinmonopolet. Uses "products/GET accumulated-stock" API endpoint from VMP.
     
     Parameters:
     none
@@ -24,13 +26,14 @@ def get_all_products():
     return all_products
 
 
-def get_products(selection, page, vmp_session_cookie):
+def get_products(client, selection, page):
     '''Retrieve products, for a selection, that are currently in stock by Vinmonopolet.  
     Each page retrieved returns 100 products
     
     Parameters:
-    arg1 str: product selection, i.e. 'øl', 'mjød', 'sider'  
-    arg2 int: page number to retrieve as results from VMP are paginated
+    arg1 obj: httpx Client instance  
+    arg2 str: product selection, i.e. 'øl', 'mjød', 'sider'  
+    arg3 int: page number to retrieve as results from VMP are paginated
       
     Returns:  
     int: HTTP status code from VMP request  
@@ -38,15 +41,19 @@ def get_products(selection, page, vmp_session_cookie):
     int: Total number of pages with products for current selection
     '''
 
-    URL = 'https://www.vinmonopolet.no/api/search?q=:relevance:visibleInSearch:true:mainCategory:%C3%B8l&searchType=product&fields=FULL&pageSize=24&currentPage=0'
+    URL = 'https://www.vinmonopolet.no/api/search'
     PARAMS = {'q':f':relevance:visibleInSearch:true:mainCategory:{selection}',
                'searchType': 'product',
                'fields': 'FULL',
                'pageSize': 100,
                'currentPage': page}
+    HEADERS = {
+        # 'user-agent' : 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_16_0) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/71.0.3578.98 Safari/537.36',
+        'user-agent' : 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_16_0)'
+    }
     
     try:
-        response = httpx.get(URL, params=PARAMS, cookies=vmp_session_cookie)
+        response = client.get(URL, params=PARAMS, headers=HEADERS)
         response_code = response.status_code
         content = response.json()
         products = content['productSearchResult']['products']
@@ -59,22 +66,26 @@ def get_products(selection, page, vmp_session_cookie):
     
     return response_code, products, total_pages
 
-def get_product_details(product_id, vmp_session_cookie):
+def get_product_details(client, product_id):
     '''Retrieve product details.
 
     Parameters:
-    arg1 int: product_id 
-    arg2 obj: httpx.cookie instance from VMP including session ID
+    arg1 obj: httpx Client instance  
+    arg2 int: product_id 
 
     Returns: 
     dict: JSON with product details if success, otherwise returns False (bool).
     '''
     product_url = f"https://www.vinmonopolet.no/api/products/{product_id}" #+ product_id 
     PARAMS = {"fields": 'FULL'}
+    HEADERS = {
+        # 'user-agent' : 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_16_0) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/71.0.3578.98 Safari/537.36',
+        'user-agent' : 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_16_0)'
+    }
 
     # Get details from VMP about product
     try:
-        product_details = httpx.get(product_url,params=PARAMS, cookies=vmp_session_cookie).json()
+        product_details = client.get(product_url,params=PARAMS, headers=HEADERS).json()
     except Exception as err:
         product_details = False
 
