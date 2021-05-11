@@ -33,7 +33,7 @@ def send_restock_email(restock):
 
                 rendered_msg = render_to_string('email/restock.html', msg_context)
 
-                send_status = send_mail(f'Oppdatering varelager', 
+                send_status = send_mail(f'Oppdatering varelager {recipient.store_id}', 
                                         '', 
                                         'kjetil@olmonopolet.com', 
                                         [recipient.username.email], 
