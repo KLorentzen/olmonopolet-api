@@ -59,10 +59,12 @@ def ordering_range_search(request):
 
     # Check if query is empty
     if request.POST["query"] != '':
+        # Trim leading/trailing whitespace from query string
+        trimmed_query = request.POST["query"].strip()
         # Fetch all Beers in stock at store 
         queryset = Beer.objects.filter(selection='Bestillingsutvalget',buyable=True, status='aktiv').order_by(F('untappd__rating').desc(nulls_last=True))
         # Find beers that match 'query' by name or brewery 
-        queryset = queryset.filter(Q(name__icontains=request.POST["query"]) | Q(brewery__icontains=request.POST["query"]))
+        queryset = queryset.filter(Q(name__icontains=trimmed_query) | Q(brewery__icontains=trimmed_query))
         
         if request.user.is_authenticated:
             # This subquery returns the rating of any beers the User has checked in to Untappd
@@ -72,7 +74,7 @@ def ordering_range_search(request):
     else:
         # Returns all beers in 'Bestillingsutvalet' if query string is empty ('')
         return redirect('ordering_range_beers')
-    return render(request, 'stubs/ordering_range_beers.html', {'beers': queryset, 'search':True, 'query':request.POST["query"]})
+    return render(request, 'stubs/ordering_range_beers.html', {'beers': queryset, 'search':True, 'query': trimmed_query})
 
 # Regular Views
 class ReleaseListView(TemplateView):

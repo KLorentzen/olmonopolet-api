@@ -46,10 +46,12 @@ def beer_stock_search(request, store_id):
 
     # Check if query is empty
     if request.POST["query"] != '':
+        # Trim leading/trailing whitespace from query string
+        trimmed_query = request.POST["query"].strip()
         # Fetch all Beers in stock at store 
         queryset = BeerStock.objects.filter(product_stock__gt=0, store_id=store_id).order_by(F('beer_id__untappd__rating').desc(nulls_last=True))
         # Find beers that match 'query' by name or brewery 
-        queryset = queryset.filter(Q(beer_id__name__icontains=request.POST["query"]) | Q(beer_id__brewery__icontains=request.POST["query"]))
+        queryset = queryset.filter(Q(beer_id__name__icontains=trimmed_query) | Q(beer_id__brewery__icontains=trimmed_query))
         
         if request.user.is_authenticated:
             # This subquery returns the rating of any beers the User has checked in to Untappd
@@ -61,9 +63,9 @@ def beer_stock_search(request, store_id):
             queryset = queryset.annotate(untappd_wishlist=Subquery(wishlist_subquery.values('user')[:1]))
 
     else:
-        # Returns all beers in stock if query string is empty ('')
+        # Return all beers in stock if query string is empty ('')
         return redirect('store_beers', store_id)
-    return render(request, 'stubs/store_inventory.html', {'beerstock': queryset, 'store_id': store_id, 'search':True, 'query':request.POST["query"]})
+    return render(request, 'stubs/store_inventory.html', {'beerstock': queryset, 'store_id': store_id, 'search':True, 'query': trimmed_query})
 
 def stock_change_in(request, store_id):
     '''
