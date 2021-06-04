@@ -19,8 +19,10 @@ def isVMPonline(client):
     }
 
     try:
-        response = client.get(URL, headers=HEADERS, allow_redirects=False)
-        if response.status_code != 200:
+        response = client.get(URL, headers=HEADERS)
+        
+        # Check if actual url matches requested url
+        if response.url != URL:
             return False
         else:
             return True
