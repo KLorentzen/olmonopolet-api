@@ -29,6 +29,7 @@ urlpatterns = [
     path('api-auth/',include('rest_framework.urls')),
     path('about/<int:store_id>/', views.AboutTemplateView.as_view(), name='about'),
     path('beers/', include('beers.urls')),
+    path('preferredpol/', include('preferredpol.urls')),
     path('stock/', include('stock.urls')),
     path('untappd/', include('untappd.urls')),
     path('', include('stores.urls')),
