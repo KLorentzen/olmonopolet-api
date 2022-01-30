@@ -30,7 +30,6 @@ class Command(BaseCommand):
         with httpx.Client() as client:
 
             # Check if Vinmonopolet is available
-            # TODO: Improve check such that stock is not set to 0 on days with Queue or when stock is set to 0 and set back to the old stock again
             if not vmp_utils.isVMPonline(client):
                 self.stdout.write(f"Vinmonopolet is not available...")
                 return
